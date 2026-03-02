@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
+const fs = require("fs");
 const { draftReplyStream } = require("./generate");
 
 // ---------------------------------------------------------------------------
@@ -127,6 +128,41 @@ app.get("/auth-check", (req, res) => {
 app.post("/logout", (_req, res) => {
   res.clearCookie("auth_token");
   res.json({ success: true });
+});
+
+// ---------------------------------------------------------------------------
+// Client directory — parsed from knowledge/clients.md at startup
+// ---------------------------------------------------------------------------
+const clientList = (() => {
+  try {
+    const raw = fs.readFileSync(path.join(__dirname, "knowledge", "clients.md"), "utf-8");
+    const clients = [];
+    const blocks = raw.split(/^## /m).slice(1);
+    for (const block of blocks) {
+      const lines = block.trim().split("\n");
+      const name = lines[0].trim();
+      let website = "", type = "", joomla = "";
+      for (const line of lines.slice(1)) {
+        const match = line.match(/^\s*-\s*\*\*(\w[\w\s]*?):\*\*\s*(.+)/);
+        if (!match) continue;
+        const key = match[1].trim().toLowerCase();
+        const val = match[2].trim();
+        if (key === "website") website = val;
+        else if (key === "type") type = val;
+        else if (key === "joomla") joomla = val;
+      }
+      if (website) clients.push({ name, website, type, joomla });
+    }
+    log("info", "Client directory loaded", { count: clients.length });
+    return clients;
+  } catch (err) {
+    log("error", "Failed to load client directory", { error: err.message });
+    return [];
+  }
+})();
+
+app.get("/clients", requireAuth, (_req, res) => {
+  res.json(clientList);
 });
 
 // ---------------------------------------------------------------------------

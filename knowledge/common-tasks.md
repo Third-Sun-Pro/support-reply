@@ -27,25 +27,65 @@ These are the most frequent support requests from clients. All clients use Jooml
 - **Warning:** Very large images slow down the site — always optimize first
 
 ## Managing Event Calendars
-- **Event Booking:** Admin → Components → Event Booking → Events
+- **Event Booking:** Admin → Components → Events Booking → Events
 - **DP Calendar:** Admin → Components → DP Calendar → Events
 - Fill in event title, dates, location, description
 - Set registration options if applicable
 - Publish the event
 
-## Updating Forms
-- Admin → Components → Convert Forms (or Forms by Tassos)
-- Find and click the form to edit
-- Add/remove/reorder fields as needed
-- To add a notification email recipient: check the form's email notification settings
-- **Note:** Form submissions are stored in the admin panel under "Submissions"
+## Editing Event Booking Registration Forms
+- Admin → Components → Events Booking → Custom Fields
+- This controls what fields appear on the registration form for events
+- To add a field: click "New", choose field type, give it a title, set required/optional
+- To hide a field: unpublish it (click the green checkmark to toggle it off)
+- To rename a field: click the field title, edit it, save
+- To reorder fields: drag and drop in the list
+- **Important:** If you're editing fields for a specific existing event, you need to edit the event itself (Events → click the event → look for "Billing Fields Setting" tab). Global Custom Fields settings only apply to newly created events.
 
-## Configuring Popups (Engage Box)
-- Admin → Components → Engage Box
+## Viewing Event Registrations
+- Admin → Components → Events Booking → Registrants
+- Filter by event name to see registrations for a specific event
+- Click a registrant to see their full details
+- Export registrant lists using the Export button
+- Use check-in feature for day-of event management
+
+## Changing Event Booking Email Notifications
+- Admin → Components → Events Booking → Emails & Messages
+- Search for the email you want to edit (e.g., "registration confirmation")
+- Edit the message content — you can use template tags for dynamic info
+- To change who receives admin notifications: go to Configuration and update notification email addresses
+
+## Updating Forms (Convert Forms)
+- Admin → Components → Convert Forms
+- Find and click the form to edit
+- Use the drag-and-drop builder to add, remove, or reorder fields
+- To make a field required: click the field → toggle "Required" on
+- To add conditional logic (show/hide fields based on other answers): click a field → set "Show When" conditions
+- **Note:** Form submissions are stored in the admin panel — Components → Convert Forms → Submissions
+
+## Changing Form Notification Emails
+- Edit the form → Behavior tab → Email Notifications
+- Make sure "Send email notifications" is turned on
+- Change recipients in the "Send To Email Address" field (comma-separated for multiple)
+- To add a second notification (e.g., auto-responder to the submitter): click "Add Email Notification"
+- Email content uses Smart Tags like `{all_fields}` — can be customized to show specific fields only
+
+## Viewing Form Submissions
+- Admin → Components → Convert Forms → Submissions
+- Filter by form name to see entries for a specific form
+- Click a submission to see full details
+- Export submissions to CSV using the Export button
+- Submissions can also be displayed on the frontend via a menu item
+
+## Configuring Popups (EngageBox)
+- Admin → Components → EngageBox
 - Edit existing popup or create new
-- Set trigger conditions (when to show)
-- **Critical:** Set cookie duration carefully — controls how often returning visitors see it
-- Test by clearing browser cookies or using incognito mode
+- Set the trigger (when it shows): page load, click, scroll, exit intent, idle, etc.
+- Set display conditions (who sees it): specific pages, devices, new vs. returning visitors, etc.
+- **Critical:** Set cookie/impression settings carefully — controls how often returning visitors see the popup
+- To limit how often it shows: set "Limit impressions per unique visitor" and cookie duration
+- To test: clear browser cookies or use incognito/private browsing mode
+- To disable a popup: unpublish it (don't delete it — you may want it back later)
 
 ## Managing Image Galleries (Droppics)
 - Admin → Components → Droppics

@@ -3,104 +3,153 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Support Reply - Third Sun Productions</title>
+  <title>Support Reply - Third Sun</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
     :root {
-      --cream: #EAE1CB;
-      --pink: #D18E97;
-      --green: #979E6C;
-      --brown: #5B3B1E;
-      --gold: #D2A432;
-      --orange: #BC5727;
-      --cream-light: #f3efe6;
-      --cream-dark: #ddd4be;
+      --navy: #1a1a2e;
+      --navy-deep: #12121f;
+      --navy-mid: #232340;
+      --rose: #c9a0a0;
+      --rose-light: #dfc4b8;
+      --rose-glow: rgba(201, 160, 160, 0.15);
+      --copper: #d4a574;
+      --copper-glow: rgba(212, 165, 116, 0.2);
+      --text: #f0ebe4;
+      --text-dim: #9b95a8;
+      --text-muted: #5e5872;
+      --glass: rgba(255, 255, 255, 0.04);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-border-focus: rgba(201, 160, 160, 0.35);
+      --input-bg: rgba(0, 0, 0, 0.25);
+      --success: #7ec4a3;
+      --success-bg: rgba(126, 196, 163, 0.1);
+      --warning: #e4b87c;
+      --warning-bg: rgba(228, 184, 124, 0.1);
+      --danger: #d47b7b;
+      --danger-bg: rgba(212, 123, 123, 0.1);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--cream-light);
-      color: var(--brown);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
+      padding: 1.5rem;
+      background: var(--navy-deep);
+      color: var(--text);
+      overflow-x: hidden;
     }
 
-    /* ── Login card ── */
+    /* ── Gradient background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 70% at 15% 20%, rgba(201, 140, 120, 0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 75%, rgba(30, 28, 60, 0.9) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 50% 10%, rgba(180, 130, 110, 0.12) 0%, transparent 50%),
+        linear-gradient(160deg, #2a1f2d 0%, #1a1a2e 30%, #12121f 70%, #0e0e1a 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Subtle grain texture ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      opacity: 0.015;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Glass card ── */
+    .card, .app-container {
+      position: relative;
+      z-index: 1;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+    }
+
     .card {
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 4px 32px rgba(91, 59, 30, 0.10), 0 1px 4px rgba(91, 59, 30, 0.06);
-      padding: 3rem;
-      max-width: 500px;
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 5px;
-      background: linear-gradient(90deg, var(--pink), var(--green), var(--cream), var(--pink));
-    }
-
-    /* ── App container ── */
-    .app-container {
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 4px 32px rgba(91, 59, 30, 0.10), 0 1px 4px rgba(91, 59, 30, 0.06);
       padding: 2.5rem;
-      max-width: 800px;
+      max-width: 440px;
       width: 100%;
-      position: relative;
-      overflow: hidden;
+      border-radius: 24px;
     }
 
-    .app-container::before {
+    .app-container {
+      padding: 2.25rem;
+      max-width: 720px;
+      width: 100%;
+      border-radius: 2px 24px 2px 24px;
+    }
+
+    /* ── Warm glow edge ── */
+    .card::before, .app-container::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 5px;
-      background: linear-gradient(90deg, var(--pink), var(--green), var(--cream), var(--pink));
+      top: -1px; left: -1px; right: -1px; bottom: -1px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(201, 160, 160, 0.2) 0%, transparent 40%, transparent 60%, rgba(201, 160, 160, 0.05) 100%);
+      z-index: -1;
+      pointer-events: none;
     }
 
-    .logo {
+    /* ── Header ── */
+    .header {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.85rem;
       margin-bottom: 0.3rem;
     }
 
-    .logo-icon {
+    .logo-mark {
       width: 36px;
       height: 36px;
-      background: var(--green);
-      border-radius: 10px;
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .logo-icon svg { width: 20px; height: 20px; fill: #fff; }
-
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--brown);
-      letter-spacing: -0.02em;
+    .logo-mark::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--rose), var(--copper));
+      border-radius: 4px;
+      transform: rotate(45deg) scale(0.72);
     }
 
-    .subtitle {
-      color: var(--green);
-      font-size: 0.85rem;
-      font-weight: 500;
+    .logo-mark svg {
+      position: relative;
+      width: 16px;
+      height: 16px;
+      fill: var(--navy-deep);
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.03em;
+    }
+
+    .tagline {
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      font-weight: 400;
       margin-bottom: 2rem;
       letter-spacing: 0.02em;
     }
@@ -108,67 +157,97 @@
     /* ── Form elements ── */
     label {
       display: block;
-      font-weight: 600;
-      font-size: 0.8rem;
+      font-weight: 500;
+      font-size: 0.7rem;
       margin-bottom: 0.4rem;
-      color: var(--brown);
+      color: var(--text-dim);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.1em;
     }
+
+    .auto-tag {
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--success);
+      font-size: 0.62rem;
+      margin-left: 0.3rem;
+    }
+
+    .client-badge {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.9rem;
+      padding: 0.55rem 0.85rem;
+      background: rgba(201, 160, 160, 0.08);
+      border: 1px solid rgba(201, 160, 160, 0.15);
+      border-radius: 10px;
+      font-size: 0.8rem;
+      color: var(--rose-light);
+      animation: fadeIn 0.2s ease;
+    }
+
+    .client-badge .org-name { font-weight: 600; color: var(--text); }
+    .client-badge .org-type {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      padding: 0.1rem 0.45rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: 100px;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
     input[type="text"],
     input[type="password"] {
       width: 100%;
-      padding: 0.8rem 1rem;
-      border: 2px solid var(--cream-dark);
+      padding: 0.72rem 0.95rem;
+      border: 1px solid var(--glass-border);
       border-radius: 10px;
       font-family: inherit;
-      font-size: 0.95rem;
-      color: var(--brown);
-      background: var(--cream-light);
-      transition: border-color 0.2s ease;
+      font-size: 0.88rem;
+      color: var(--text);
+      background: var(--input-bg);
+      transition: all 0.25s ease;
     }
 
     input:focus {
       outline: none;
-      border-color: var(--pink);
+      border-color: var(--glass-border-focus);
+      box-shadow: 0 0 0 3px var(--rose-glow);
+      background: rgba(0, 0, 0, 0.35);
     }
 
     textarea {
       width: 100%;
-      padding: 1rem;
-      border: 2px solid var(--cream-dark);
+      padding: 0.95rem 1rem;
+      border: 1px solid var(--glass-border);
       border-radius: 10px;
-      font-family: inherit;
-      font-size: 0.95rem;
-      color: var(--brown);
-      background: var(--cream-light);
+      font-family: 'JetBrains Mono', 'SF Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--input-bg);
       resize: vertical;
-      min-height: 160px;
-      transition: border-color 0.2s ease;
+      min-height: 150px;
+      transition: all 0.25s ease;
     }
 
     textarea:focus {
       outline: none;
-      border-color: var(--pink);
+      border-color: var(--glass-border-focus);
+      box-shadow: 0 0 0 3px var(--rose-glow);
+      background: rgba(0, 0, 0, 0.35);
     }
 
-    .field-group {
-      margin-bottom: 1rem;
+    textarea::placeholder, input::placeholder {
+      color: var(--text-muted);
     }
 
-    .field-row {
-      display: flex;
-      gap: 1rem;
-    }
-
+    .field-group { margin-bottom: 0.9rem; }
+    .field-row { display: flex; gap: 0.75rem; }
     .field-row .field-group { flex: 1; }
-
-    .hint {
-      font-size: 0.75rem;
-      color: #999;
-      margin-top: 0.25rem;
-    }
 
     /* ── Buttons ── */
     .btn {
@@ -176,105 +255,139 @@
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      padding: 0.85rem 1.75rem;
+      padding: 0.78rem 1.6rem;
       border: none;
       border-radius: 10px;
       font-family: inherit;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
+      letter-spacing: -0.01em;
     }
 
     .btn-primary {
-      background: var(--green);
-      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--copper));
+      color: var(--navy-deep);
       width: 100%;
+      box-shadow: 0 4px 20px var(--copper-glow);
     }
 
-    .btn-primary:hover { background: #878e5e; }
-    .btn-primary:disabled { background: var(--cream-dark); cursor: not-allowed; color: #999; }
-
-    .btn-secondary {
-      background: var(--cream-light);
-      color: var(--brown);
-      border: 2px solid var(--cream-dark);
+    .btn-primary:hover {
+      box-shadow: 0 6px 30px rgba(212, 165, 116, 0.35);
+      transform: translateY(-1px);
+      filter: brightness(1.05);
     }
 
-    .btn-secondary:hover { border-color: var(--pink); background: #f5eced; }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-primary:disabled {
+      background: var(--navy-mid);
+      box-shadow: none;
+      cursor: not-allowed;
+      color: var(--text-muted);
+      transform: none;
+      filter: none;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--glass-border);
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.03);
+    }
 
     .btn-copy {
-      background: var(--pink);
-      color: #fff;
+      background: linear-gradient(135deg, var(--rose), var(--copper));
+      color: var(--navy-deep);
       width: 100%;
+      box-shadow: 0 2px 12px var(--copper-glow);
     }
 
-    .btn-copy:hover { background: #c07d86; }
-    .btn-copy.copied { background: var(--green); }
+    .btn-copy:hover { filter: brightness(1.05); transform: translateY(-1px); }
+    .btn-copy:active { transform: translateY(0); }
+    .btn-copy.copied { background: var(--success); }
 
-    /* ── Response area ── */
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+      margin: 1.5rem 0;
+    }
+
+    /* ── Response ── */
     .response-area {
       display: none;
-      margin-top: 1.5rem;
+      margin-top: 0.25rem;
     }
 
     .response-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.6rem;
     }
 
     .response-label {
-      font-weight: 600;
-      font-size: 0.8rem;
+      font-weight: 500;
+      font-size: 0.7rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--brown);
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
     }
 
     .triage-badge {
       display: none;
-      padding: 0.3rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
+      padding: 0.22rem 0.7rem;
+      border-radius: 100px;
+      font-size: 0.65rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.04em;
     }
 
     .triage-badge.routine {
-      display: inline-block;
-      background: #f0f1e8;
-      color: var(--green);
+      display: inline-flex;
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid rgba(126, 196, 163, 0.2);
     }
 
     .triage-badge.needs-troy {
-      display: inline-block;
-      background: #fce8e0;
-      color: var(--orange);
+      display: inline-flex;
+      background: var(--warning-bg);
+      color: var(--warning);
+      border: 1px solid rgba(228, 184, 124, 0.2);
     }
 
     .response-content {
-      background: var(--cream-light);
-      border: 2px solid var(--cream-dark);
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
       border-radius: 10px;
-      padding: 1.25rem;
-      min-height: 100px;
-      max-height: 400px;
+      padding: 1.1rem 1.2rem;
+      min-height: 60px;
+      max-height: 350px;
       overflow-y: auto;
-      font-size: 0.95rem;
-      line-height: 1.65;
+      font-size: 0.88rem;
+      line-height: 1.75;
       white-space: pre-wrap;
+      color: var(--text);
     }
 
-    .response-content p { margin-bottom: 0.75rem; }
-    .response-content p:last-child { margin-bottom: 0; }
+    .response-content::-webkit-scrollbar { width: 5px; }
+    .response-content::-webkit-scrollbar-track { background: transparent; }
+    .response-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+    .response-content::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
 
     .response-actions {
       display: flex;
-      gap: 0.75rem;
-      margin-top: 1rem;
+      gap: 0.6rem;
+      margin-top: 0.75rem;
     }
 
     .response-actions .btn { flex: 1; }
@@ -282,12 +395,12 @@
     /* ── Spinner ── */
     .spinner {
       display: none;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(26, 26, 46, 0.2);
+      border-top-color: var(--navy-deep);
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin 0.7s linear infinite;
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -295,22 +408,53 @@
     /* ── Error ── */
     .error-msg {
       display: none;
-      background: #fce8e0;
-      color: var(--orange);
-      padding: 0.75rem 1rem;
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid rgba(212, 123, 123, 0.2);
+      padding: 0.6rem 0.9rem;
       border-radius: 10px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 500;
-      margin-top: 1rem;
+      margin-top: 0.75rem;
     }
 
-    /* ── Hidden ── */
+    /* ── Streaming cursor ── */
+    .streaming .response-content::after {
+      content: '';
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: var(--rose);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
     .hidden { display: none !important; }
 
-    /* ── Responsive ── */
+    /* ── Login specific ── */
+    #loginCard {
+      text-align: center;
+    }
+
+    #loginCard .header {
+      justify-content: center;
+    }
+
+    #loginCard .tagline {
+      text-align: center;
+    }
+
+    #loginCard label {
+      text-align: left;
+    }
+
     @media (max-width: 600px) {
-      body { padding: 1rem; }
-      .card, .app-container { padding: 2rem 1.5rem; }
+      body { padding: 0.75rem; }
+      .card { padding: 2rem; }
+      .app-container { padding: 1.5rem; }
       .field-row { flex-direction: column; gap: 0; }
     }
   </style>
@@ -319,13 +463,13 @@
 
   <!-- Login -->
   <div class="card" id="loginCard">
-    <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+    <div class="header">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 12H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1z"/></svg>
       </div>
       <h1>Support Reply</h1>
     </div>
-    <p class="subtitle">Third Sun Productions</p>
+    <p class="tagline">Third Sun Productions</p>
 
     <form id="loginForm">
       <div class="field-group">
@@ -339,13 +483,13 @@
 
   <!-- App -->
   <div class="app-container hidden" id="appContainer">
-    <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+    <div class="header">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 12H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1z"/></svg>
       </div>
       <h1>Support Reply</h1>
     </div>
-    <p class="subtitle">Draft AI-powered replies to client emails</p>
+    <p class="tagline">Paste a client email, get a ready-to-send reply</p>
 
     <form id="draftForm">
       <div class="field-group">
@@ -353,14 +497,20 @@
         <textarea id="emailText" placeholder="Paste the client's email here..." required></textarea>
       </div>
 
+      <div class="client-badge" id="clientBadge">
+        <span class="org-name" id="orgName"></span>
+        <span class="org-type" id="orgType"></span>
+      </div>
+
       <div class="field-row">
         <div class="field-group">
-          <label for="clientName">Client Name <span style="font-weight:400;text-transform:none;font-size:0.75rem;color:#999">(optional)</span></label>
-          <input type="text" id="clientName" placeholder="e.g. Aimee">
+          <label for="clientName">Client Name <span class="auto-tag hidden" id="nameAutoTag">auto-detected</span></label>
+          <input type="text" id="clientName" placeholder="e.g. Aimee" required>
         </div>
         <div class="field-group">
-          <label for="siteUrl">Site URL <span style="font-weight:400;text-transform:none;font-size:0.75rem;color:#999">(optional)</span></label>
-          <input type="text" id="siteUrl" placeholder="e.g. uaf.org">
+          <label for="siteUrl">Site URL <span class="auto-tag hidden" id="urlAutoTag">auto-detected</span></label>
+          <input type="text" id="siteUrl" placeholder="e.g. uaf.org" required list="clientSuggestions">
+          <datalist id="clientSuggestions"></datalist>
         </div>
       </div>
 
@@ -372,6 +522,7 @@
     </form>
 
     <div class="response-area" id="responseArea">
+      <div class="divider"></div>
       <div class="response-header">
         <span class="response-label">Draft Reply</span>
         <span class="triage-badge" id="triageBadge"></span>
@@ -379,13 +530,12 @@
       <div class="response-content" id="responseContent"></div>
       <div class="response-actions">
         <button class="btn btn-copy" id="copyBtn">Copy to Clipboard</button>
-        <button class="btn btn-secondary" id="startOverBtn">Start Over</button>
+        <button class="btn btn-ghost" id="startOverBtn">Start Over</button>
       </div>
     </div>
   </div>
 
 <script>
-  // ── DOM refs ──
   const loginCard = document.getElementById("loginCard");
   const appContainer = document.getElementById("appContainer");
   const loginForm = document.getElementById("loginForm");
@@ -408,16 +558,117 @@
   const copyBtn = document.getElementById("copyBtn");
   const startOverBtn = document.getElementById("startOverBtn");
 
+  const nameAutoTag = document.getElementById("nameAutoTag");
+  const urlAutoTag = document.getElementById("urlAutoTag");
+  const clientBadge = document.getElementById("clientBadge");
+  const orgNameEl = document.getElementById("orgName");
+  const orgTypeEl = document.getElementById("orgType");
+  const clientSuggestions = document.getElementById("clientSuggestions");
+
   let currentAbortController = null;
   let replyAccumulator = "";
+  let clientDirectory = [];
 
-  // ── Auth check on load ──
+  // ── Auto-detect client name and website from pasted email ──
+  function detectClientInfo(text) {
+    const result = { name: null, url: null };
+
+    const signoffPattern = /(?:thanks|thank you|sincerely|best|regards|cheers|warmly|respectfully|with gratitude)[,!]?\s*\n+\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/im;
+    const signoffMatch = text.match(signoffPattern);
+    if (signoffMatch) {
+      result.name = signoffMatch[1].trim();
+    }
+
+    if (!result.name) {
+      const letMeKnow = /let me know[,.]?\s*\n+\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/im;
+      const lmkMatch = text.match(letMeKnow);
+      if (lmkMatch) result.name = lmkMatch[1].trim();
+    }
+
+    const urlPattern = /(?:https?:\/\/)?(?:www\.)?([a-z0-9][-a-z0-9]*\.[a-z]{2,}(?:\.[a-z]{2,})?)/gi;
+    const urls = [];
+    let urlMatch;
+    while ((urlMatch = urlPattern.exec(text)) !== null) {
+      const domain = urlMatch[1].toLowerCase();
+      if (!/thirdsun|gmail|yahoo|hotmail|outlook|google|stripe|scribehow/.test(domain)) {
+        urls.push(domain);
+      }
+    }
+    if (urls.length > 0) result.url = urls[0];
+
+    return result;
+  }
+
+  function runDetection() {
+    const text = emailTextEl.value;
+    if (!text.trim()) return;
+
+    const info = detectClientInfo(text);
+
+    if (info.name && !clientNameEl.dataset.userEdited) {
+      clientNameEl.value = info.name;
+      nameAutoTag.classList.remove("hidden");
+    }
+    if (info.url && !siteUrlEl.dataset.userEdited) {
+      siteUrlEl.value = info.url;
+      urlAutoTag.classList.remove("hidden");
+      lookupClient(info.url);
+    }
+  }
+
+  // ── Client directory lookup ──
+  async function loadClientDirectory() {
+    try {
+      const res = await fetch("/clients");
+      if (res.ok) {
+        clientDirectory = await res.json();
+        // Populate datalist with client websites
+        clientSuggestions.innerHTML = clientDirectory
+          .map(c => `<option value="${c.website}" label="${c.name}">`)
+          .join("");
+      }
+    } catch { /* silent fail — directory is a nice-to-have */ }
+  }
+
+  function lookupClient(urlValue) {
+    if (!urlValue || !clientDirectory.length) {
+      clientBadge.style.display = "none";
+      return null;
+    }
+    const clean = urlValue.toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, "");
+    const match = clientDirectory.find(c => {
+      const cDomain = c.website.toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, "");
+      return clean === cDomain || clean.includes(cDomain) || cDomain.includes(clean);
+    });
+    if (match) {
+      orgNameEl.textContent = match.name;
+      orgTypeEl.textContent = match.type || "";
+      orgTypeEl.style.display = match.type ? "inline" : "none";
+      clientBadge.style.display = "flex";
+      return match;
+    } else {
+      clientBadge.style.display = "none";
+      return null;
+    }
+  }
+
+  emailTextEl.addEventListener("input", runDetection);
+  emailTextEl.addEventListener("paste", () => setTimeout(runDetection, 50));
+
+  clientNameEl.addEventListener("input", () => {
+    clientNameEl.dataset.userEdited = "true";
+    nameAutoTag.classList.add("hidden");
+  });
+  siteUrlEl.addEventListener("input", () => {
+    siteUrlEl.dataset.userEdited = "true";
+    urlAutoTag.classList.add("hidden");
+    lookupClient(siteUrlEl.value);
+  });
+  siteUrlEl.addEventListener("change", () => lookupClient(siteUrlEl.value));
+
   fetch("/auth-check")
     .then((r) => r.json())
-    .then((data) => {
-      if (data.authenticated) showApp();
-      else showLogin();
-    })
+    .then((data) => { if (data.authenticated) showApp(); else showLogin(); })
     .catch(() => showLogin());
 
   function showLogin() {
@@ -430,44 +681,35 @@
     loginCard.classList.add("hidden");
     appContainer.classList.remove("hidden");
     emailTextEl.focus();
+    loadClientDirectory();
   }
 
-  // ── Login ──
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     loginError.style.display = "none";
     loginBtn.disabled = true;
-
     try {
       const res = await fetch("/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: passwordEl.value }),
       });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Login failed");
-      }
-
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Login failed"); }
       showApp();
     } catch (err) {
       loginError.textContent = err.message;
       loginError.style.display = "block";
-    } finally {
-      loginBtn.disabled = false;
-    }
+    } finally { loginBtn.disabled = false; }
   });
 
-  // ── Draft reply ──
   draftForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const emailText = emailTextEl.value.trim();
     if (!emailText) return;
 
-    // Reset UI
     draftError.style.display = "none";
     responseArea.style.display = "none";
+    responseArea.classList.remove("streaming");
     triageBadge.style.display = "none";
     triageBadge.className = "triage-badge";
     responseContent.textContent = "";
@@ -475,7 +717,6 @@
     copyBtn.textContent = "Copy to Clipboard";
     copyBtn.classList.remove("copied");
 
-    // Show loading
     draftBtn.disabled = true;
     draftBtnText.textContent = "Drafting...";
     draftSpinner.style.display = "inline-block";
@@ -495,13 +736,10 @@
         signal: currentAbortController.signal,
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Request failed");
-      }
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Request failed"); }
 
-      // Show response area for streaming
       responseArea.style.display = "block";
+      responseArea.classList.add("streaming");
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -510,7 +748,6 @@
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n");
         buffer = lines.pop();
@@ -519,7 +756,6 @@
           if (!line.startsWith("data: ")) continue;
           const jsonStr = line.slice(6);
           if (!jsonStr) continue;
-
           let data;
           try { data = JSON.parse(jsonStr); } catch { continue; }
 
@@ -530,23 +766,23 @@
           }
 
           if (data.done) {
+            responseArea.classList.remove("streaming");
             if (data.triage === "needs-troy") {
-              triageBadge.textContent = "Needs Troy";
+              triageBadge.textContent = "Route to Troy";
               triageBadge.classList.add("needs-troy");
-              triageBadge.style.display = "inline-block";
+              triageBadge.style.display = "inline-flex";
             } else {
               triageBadge.textContent = "Routine";
               triageBadge.classList.add("routine");
-              triageBadge.style.display = "inline-block";
+              triageBadge.style.display = "inline-flex";
             }
           }
 
-          if (data.error) {
-            throw new Error(data.error);
-          }
+          if (data.error) throw new Error(data.error);
         }
       }
     } catch (err) {
+      responseArea.classList.remove("streaming");
       if (err.name === "AbortError") return;
       draftError.textContent = err.message;
       draftError.style.display = "block";
@@ -557,40 +793,34 @@
     }
   });
 
-  // ── Copy to clipboard ──
   copyBtn.addEventListener("click", async () => {
     try {
       await navigator.clipboard.writeText(replyAccumulator);
-      copyBtn.textContent = "Copied!";
-      copyBtn.classList.add("copied");
-      setTimeout(() => {
-        copyBtn.textContent = "Copy to Clipboard";
-        copyBtn.classList.remove("copied");
-      }, 2000);
     } catch {
-      // Fallback for older browsers
       const ta = document.createElement("textarea");
       ta.value = replyAccumulator;
       document.body.appendChild(ta);
       ta.select();
       document.execCommand("copy");
       document.body.removeChild(ta);
-      copyBtn.textContent = "Copied!";
-      copyBtn.classList.add("copied");
-      setTimeout(() => {
-        copyBtn.textContent = "Copy to Clipboard";
-        copyBtn.classList.remove("copied");
-      }, 2000);
     }
+    copyBtn.textContent = "Copied!";
+    copyBtn.classList.add("copied");
+    setTimeout(() => { copyBtn.textContent = "Copy to Clipboard"; copyBtn.classList.remove("copied"); }, 2000);
   });
 
-  // ── Start over ──
   startOverBtn.addEventListener("click", () => {
     responseArea.style.display = "none";
+    responseArea.classList.remove("streaming");
     draftError.style.display = "none";
     emailTextEl.value = "";
     clientNameEl.value = "";
     siteUrlEl.value = "";
+    delete clientNameEl.dataset.userEdited;
+    delete siteUrlEl.dataset.userEdited;
+    nameAutoTag.classList.add("hidden");
+    urlAutoTag.classList.add("hidden");
+    clientBadge.style.display = "none";
     replyAccumulator = "";
     responseContent.textContent = "";
     triageBadge.style.display = "none";

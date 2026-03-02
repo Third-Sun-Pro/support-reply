@@ -79,6 +79,39 @@ describe("Routes", () => {
   });
 });
 
+describe("Client directory", () => {
+  it("rejects without auth", async () => {
+    const res = await request(app).get("/clients");
+    expect(res.status).toBe(401);
+  });
+
+  it("returns client list with auth", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .get("/clients")
+      .set("Cookie", cookie);
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
+    expect(res.body[0]).toHaveProperty("name");
+    expect(res.body[0]).toHaveProperty("website");
+  });
+});
+
+describe("Logout", () => {
+  it("clears auth cookie", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/logout")
+      .set("Cookie", cookie);
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    const setCookie = res.headers["set-cookie"];
+    expect(setCookie).toBeDefined();
+    expect(setCookie[0]).toContain("auth_token=;");
+  });
+});
+
 describe("Generate helpers", () => {
   it("extracts triage from response text", async () => {
     const { extractTriage, stripTriageTag } = await import("../generate.js");
