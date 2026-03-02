@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support Reply - Third Sun Productions</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+    :root {
+      --cream: #EAE1CB;
+      --pink: #D18E97;
+      --green: #979E6C;
+      --brown: #5B3B1E;
+      --gold: #D2A432;
+      --orange: #BC5727;
+      --cream-light: #f3efe6;
+      --cream-dark: #ddd4be;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--cream-light);
+      color: var(--brown);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    /* ── Login card ── */
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 32px rgba(91, 59, 30, 0.10), 0 1px 4px rgba(91, 59, 30, 0.06);
+      padding: 3rem;
+      max-width: 500px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--pink), var(--green), var(--cream), var(--pink));
+    }
+
+    /* ── App container ── */
+    .app-container {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 32px rgba(91, 59, 30, 0.10), 0 1px 4px rgba(91, 59, 30, 0.06);
+      padding: 2.5rem;
+      max-width: 800px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-container::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--pink), var(--green), var(--cream), var(--pink));
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--green);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon svg { width: 20px; height: 20px; fill: #fff; }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--brown);
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--green);
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 2rem;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Form elements ── */
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.8rem;
+      margin-bottom: 0.4rem;
+      color: var(--brown);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 2px solid var(--cream-dark);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--brown);
+      background: var(--cream-light);
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--pink);
+    }
+
+    textarea {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid var(--cream-dark);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--brown);
+      background: var(--cream-light);
+      resize: vertical;
+      min-height: 160px;
+      transition: border-color 0.2s ease;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--pink);
+    }
+
+    .field-group {
+      margin-bottom: 1rem;
+    }
+
+    .field-row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .field-row .field-group { flex: 1; }
+
+    .hint {
+      font-size: 0.75rem;
+      color: #999;
+      margin-top: 0.25rem;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.75rem;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: #fff;
+      width: 100%;
+    }
+
+    .btn-primary:hover { background: #878e5e; }
+    .btn-primary:disabled { background: var(--cream-dark); cursor: not-allowed; color: #999; }
+
+    .btn-secondary {
+      background: var(--cream-light);
+      color: var(--brown);
+      border: 2px solid var(--cream-dark);
+    }
+
+    .btn-secondary:hover { border-color: var(--pink); background: #f5eced; }
+
+    .btn-copy {
+      background: var(--pink);
+      color: #fff;
+      width: 100%;
+    }
+
+    .btn-copy:hover { background: #c07d86; }
+    .btn-copy.copied { background: var(--green); }
+
+    /* ── Response area ── */
+    .response-area {
+      display: none;
+      margin-top: 1.5rem;
+    }
+
+    .response-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .response-label {
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--brown);
+    }
+
+    .triage-badge {
+      display: none;
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .triage-badge.routine {
+      display: inline-block;
+      background: #f0f1e8;
+      color: var(--green);
+    }
+
+    .triage-badge.needs-troy {
+      display: inline-block;
+      background: #fce8e0;
+      color: var(--orange);
+    }
+
+    .response-content {
+      background: var(--cream-light);
+      border: 2px solid var(--cream-dark);
+      border-radius: 10px;
+      padding: 1.25rem;
+      min-height: 100px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    .response-content p { margin-bottom: 0.75rem; }
+    .response-content p:last-child { margin-bottom: 0; }
+
+    .response-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .response-actions .btn { flex: 1; }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error ── */
+    .error-msg {
+      display: none;
+      background: #fce8e0;
+      color: var(--orange);
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-top: 1rem;
+    }
+
+    /* ── Hidden ── */
+    .hidden { display: none !important; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      body { padding: 1rem; }
+      .card, .app-container { padding: 2rem 1.5rem; }
+      .field-row { flex-direction: column; gap: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login -->
+  <div class="card" id="loginCard">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+      </div>
+      <h1>Support Reply</h1>
+    </div>
+    <p class="subtitle">Third Sun Productions</p>
+
+    <form id="loginForm">
+      <div class="field-group">
+        <label for="password">Team Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
+      <div class="error-msg" id="loginError"></div>
+    </form>
+  </div>
+
+  <!-- App -->
+  <div class="app-container hidden" id="appContainer">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+      </div>
+      <h1>Support Reply</h1>
+    </div>
+    <p class="subtitle">Draft AI-powered replies to client emails</p>
+
+    <form id="draftForm">
+      <div class="field-group">
+        <label for="emailText">Client Email</label>
+        <textarea id="emailText" placeholder="Paste the client's email here..." required></textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label for="clientName">Client Name <span style="font-weight:400;text-transform:none;font-size:0.75rem;color:#999">(optional)</span></label>
+          <input type="text" id="clientName" placeholder="e.g. Aimee">
+        </div>
+        <div class="field-group">
+          <label for="siteUrl">Site URL <span style="font-weight:400;text-transform:none;font-size:0.75rem;color:#999">(optional)</span></label>
+          <input type="text" id="siteUrl" placeholder="e.g. uaf.org">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="draftBtn">
+        <span id="draftBtnText">Draft Reply</span>
+        <span class="spinner" id="draftSpinner"></span>
+      </button>
+      <div class="error-msg" id="draftError"></div>
+    </form>
+
+    <div class="response-area" id="responseArea">
+      <div class="response-header">
+        <span class="response-label">Draft Reply</span>
+        <span class="triage-badge" id="triageBadge"></span>
+      </div>
+      <div class="response-content" id="responseContent"></div>
+      <div class="response-actions">
+        <button class="btn btn-copy" id="copyBtn">Copy to Clipboard</button>
+        <button class="btn btn-secondary" id="startOverBtn">Start Over</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ── DOM refs ──
+  const loginCard = document.getElementById("loginCard");
+  const appContainer = document.getElementById("appContainer");
+  const loginForm = document.getElementById("loginForm");
+  const loginBtn = document.getElementById("loginBtn");
+  const loginError = document.getElementById("loginError");
+  const passwordEl = document.getElementById("password");
+
+  const draftForm = document.getElementById("draftForm");
+  const draftBtn = document.getElementById("draftBtn");
+  const draftBtnText = document.getElementById("draftBtnText");
+  const draftSpinner = document.getElementById("draftSpinner");
+  const draftError = document.getElementById("draftError");
+  const emailTextEl = document.getElementById("emailText");
+  const clientNameEl = document.getElementById("clientName");
+  const siteUrlEl = document.getElementById("siteUrl");
+
+  const responseArea = document.getElementById("responseArea");
+  const responseContent = document.getElementById("responseContent");
+  const triageBadge = document.getElementById("triageBadge");
+  const copyBtn = document.getElementById("copyBtn");
+  const startOverBtn = document.getElementById("startOverBtn");
+
+  let currentAbortController = null;
+  let replyAccumulator = "";
+
+  // ── Auth check on load ──
+  fetch("/auth-check")
+    .then((r) => r.json())
+    .then((data) => {
+      if (data.authenticated) showApp();
+      else showLogin();
+    })
+    .catch(() => showLogin());
+
+  function showLogin() {
+    loginCard.classList.remove("hidden");
+    appContainer.classList.add("hidden");
+    passwordEl.focus();
+  }
+
+  function showApp() {
+    loginCard.classList.add("hidden");
+    appContainer.classList.remove("hidden");
+    emailTextEl.focus();
+  }
+
+  // ── Login ──
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    loginError.style.display = "none";
+    loginBtn.disabled = true;
+
+    try {
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: passwordEl.value }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Login failed");
+      }
+
+      showApp();
+    } catch (err) {
+      loginError.textContent = err.message;
+      loginError.style.display = "block";
+    } finally {
+      loginBtn.disabled = false;
+    }
+  });
+
+  // ── Draft reply ──
+  draftForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const emailText = emailTextEl.value.trim();
+    if (!emailText) return;
+
+    // Reset UI
+    draftError.style.display = "none";
+    responseArea.style.display = "none";
+    triageBadge.style.display = "none";
+    triageBadge.className = "triage-badge";
+    responseContent.textContent = "";
+    replyAccumulator = "";
+    copyBtn.textContent = "Copy to Clipboard";
+    copyBtn.classList.remove("copied");
+
+    // Show loading
+    draftBtn.disabled = true;
+    draftBtnText.textContent = "Drafting...";
+    draftSpinner.style.display = "inline-block";
+
+    if (currentAbortController) currentAbortController.abort();
+    currentAbortController = new AbortController();
+
+    try {
+      const res = await fetch("/draft-reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: emailText,
+          clientName: clientNameEl.value.trim() || undefined,
+          siteUrl: siteUrlEl.value.trim() || undefined,
+        }),
+        signal: currentAbortController.signal,
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Request failed");
+      }
+
+      // Show response area for streaming
+      responseArea.style.display = "block";
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6);
+          if (!jsonStr) continue;
+
+          let data;
+          try { data = JSON.parse(jsonStr); } catch { continue; }
+
+          if (data.text) {
+            replyAccumulator += data.text;
+            responseContent.textContent = replyAccumulator;
+            responseContent.scrollTop = responseContent.scrollHeight;
+          }
+
+          if (data.done) {
+            if (data.triage === "needs-troy") {
+              triageBadge.textContent = "Needs Troy";
+              triageBadge.classList.add("needs-troy");
+              triageBadge.style.display = "inline-block";
+            } else {
+              triageBadge.textContent = "Routine";
+              triageBadge.classList.add("routine");
+              triageBadge.style.display = "inline-block";
+            }
+          }
+
+          if (data.error) {
+            throw new Error(data.error);
+          }
+        }
+      }
+    } catch (err) {
+      if (err.name === "AbortError") return;
+      draftError.textContent = err.message;
+      draftError.style.display = "block";
+    } finally {
+      draftBtn.disabled = false;
+      draftBtnText.textContent = "Draft Reply";
+      draftSpinner.style.display = "none";
+    }
+  });
+
+  // ── Copy to clipboard ──
+  copyBtn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(replyAccumulator);
+      copyBtn.textContent = "Copied!";
+      copyBtn.classList.add("copied");
+      setTimeout(() => {
+        copyBtn.textContent = "Copy to Clipboard";
+        copyBtn.classList.remove("copied");
+      }, 2000);
+    } catch {
+      // Fallback for older browsers
+      const ta = document.createElement("textarea");
+      ta.value = replyAccumulator;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      copyBtn.textContent = "Copied!";
+      copyBtn.classList.add("copied");
+      setTimeout(() => {
+        copyBtn.textContent = "Copy to Clipboard";
+        copyBtn.classList.remove("copied");
+      }, 2000);
+    }
+  });
+
+  // ── Start over ──
+  startOverBtn.addEventListener("click", () => {
+    responseArea.style.display = "none";
+    draftError.style.display = "none";
+    emailTextEl.value = "";
+    clientNameEl.value = "";
+    siteUrlEl.value = "";
+    replyAccumulator = "";
+    responseContent.textContent = "";
+    triageBadge.style.display = "none";
+    triageBadge.className = "triage-badge";
+    emailTextEl.focus();
+  });
+</script>
+</body>
+</html>
