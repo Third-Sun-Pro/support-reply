@@ -188,6 +188,13 @@
       animation: fadeIn 0.2s ease;
     }
 
+    .client-badge.no-match {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--glass-border);
+      color: var(--text-dim);
+    }
+    .client-badge.no-match .org-name { color: var(--text-dim); font-weight: 400; }
+
     .client-badge .org-name { font-weight: 600; color: var(--text); }
     .client-badge .org-type {
       font-size: 0.68rem;
@@ -432,6 +439,33 @@
 
     @keyframes blink { 50% { opacity: 0; } }
 
+    /* ── Draft history ── */
+    .draft-history-item {
+      padding: 0.6rem 0.85rem;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+      font-size: 0.8rem;
+    }
+    .draft-history-item:hover { border-color: var(--glass-border-focus); }
+    .draft-history-item .draft-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.3rem;
+      color: var(--text-dim);
+      font-size: 0.72rem;
+    }
+    .draft-history-item .draft-preview {
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .hidden { display: none !important; }
 
     /* ── Login specific ── */
@@ -533,6 +567,15 @@
         <button class="btn btn-ghost" id="startOverBtn">Start Over</button>
       </div>
     </div>
+
+    <div id="draftHistory" style="display:none;">
+      <div class="divider"></div>
+      <div class="response-header" style="margin-bottom: 0.5rem;">
+        <span class="response-label">Recent Drafts</span>
+        <button class="btn btn-ghost" id="clearHistoryBtn" style="padding: 0.3rem 0.7rem; font-size: 0.7rem;">Clear</button>
+      </div>
+      <div id="draftHistoryList"></div>
+    </div>
   </div>
 
 <script>
@@ -568,6 +611,85 @@
   let currentAbortController = null;
   let replyAccumulator = "";
   let clientDirectory = [];
+
+  const draftHistory = document.getElementById("draftHistory");
+  const draftHistoryList = document.getElementById("draftHistoryList");
+  const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+
+  // ── Draft history (localStorage) ──
+  const DRAFT_HISTORY_KEY = "support-reply-drafts";
+  const MAX_DRAFTS = 10;
+
+  function saveDraft(draft) {
+    try {
+      const history = JSON.parse(localStorage.getItem(DRAFT_HISTORY_KEY) || "[]");
+      history.unshift(draft);
+      if (history.length > MAX_DRAFTS) history.length = MAX_DRAFTS;
+      localStorage.setItem(DRAFT_HISTORY_KEY, JSON.stringify(history));
+    } catch { /* localStorage full or unavailable */ }
+  }
+
+  function loadDrafts() {
+    try { return JSON.parse(localStorage.getItem(DRAFT_HISTORY_KEY) || "[]"); }
+    catch { return []; }
+  }
+
+  function clearDraftHistory() {
+    localStorage.removeItem(DRAFT_HISTORY_KEY);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function renderDraftHistory() {
+    const drafts = loadDrafts();
+    if (!drafts.length) { draftHistory.style.display = "none"; return; }
+    draftHistory.style.display = "block";
+    draftHistoryList.innerHTML = drafts.map((d, i) => {
+      const date = new Date(d.timestamp);
+      const timeStr = date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
+        + " " + date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+      const preview = d.text.slice(0, 80).replace(/\n/g, " ") + (d.text.length > 80 ? "..." : "");
+      return `<div class="draft-history-item" data-index="${i}">
+        <div class="draft-meta">
+          <span>${escapeHtml(d.clientName)}${d.siteUrl ? " &middot; " + escapeHtml(d.siteUrl) : ""}</span>
+          <span>${timeStr}</span>
+        </div>
+        <div class="draft-preview">${escapeHtml(preview)}</div>
+      </div>`;
+    }).join("");
+  }
+
+  draftHistoryList.addEventListener("click", (e) => {
+    const item = e.target.closest(".draft-history-item");
+    if (!item) return;
+    const drafts = loadDrafts();
+    const draft = drafts[parseInt(item.dataset.index, 10)];
+    if (!draft) return;
+
+    replyAccumulator = draft.text;
+    responseContent.textContent = draft.text;
+    responseArea.style.display = "block";
+    responseArea.classList.remove("streaming");
+    triageBadge.className = "triage-badge";
+    if (draft.triage === "needs-troy") {
+      triageBadge.textContent = "Route to Troy";
+      triageBadge.classList.add("needs-troy");
+    } else {
+      triageBadge.textContent = "Routine";
+      triageBadge.classList.add("routine");
+    }
+    triageBadge.style.display = "inline-flex";
+    copyBtn.textContent = "Copy to Clipboard";
+    copyBtn.classList.remove("copied");
+    responseArea.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+
+  clearHistoryBtn.addEventListener("click", () => {
+    clearDraftHistory();
+    renderDraftHistory();
+  });
 
   // ── Auto-detect client name and website from pasted email ──
   function detectClientInfo(text) {
@@ -633,21 +755,33 @@
   function lookupClient(urlValue) {
     if (!urlValue || !clientDirectory.length) {
       clientBadge.style.display = "none";
+      clientBadge.classList.remove("no-match");
       return null;
     }
-    const clean = urlValue.toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, "");
+    const clean = urlValue.toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").replace(/\/$/, "");
     const match = clientDirectory.find(c => {
-      const cDomain = c.website.toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, "");
-      return clean === cDomain || clean.includes(cDomain) || cDomain.includes(clean);
+      const cDomain = c.website.toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").replace(/\/$/, "");
+      if (clean === cDomain) return true;
+      if (clean.endsWith("." + cDomain) || cDomain.endsWith("." + clean)) return true;
+      return false;
     });
     if (match) {
       orgNameEl.textContent = match.name;
       orgTypeEl.textContent = match.type || "";
       orgTypeEl.style.display = match.type ? "inline" : "none";
       clientBadge.style.display = "flex";
+      clientBadge.classList.remove("no-match");
       return match;
     } else {
-      clientBadge.style.display = "none";
+      if (clean) {
+        orgNameEl.textContent = "Client not found in directory";
+        orgTypeEl.style.display = "none";
+        clientBadge.style.display = "flex";
+        clientBadge.classList.add("no-match");
+      } else {
+        clientBadge.style.display = "none";
+        clientBadge.classList.remove("no-match");
+      }
       return null;
     }
   }
@@ -682,6 +816,7 @@
     appContainer.classList.remove("hidden");
     emailTextEl.focus();
     loadClientDirectory();
+    renderDraftHistory();
   }
 
   loginForm.addEventListener("submit", async (e) => {
@@ -776,6 +911,14 @@
               triageBadge.classList.add("routine");
               triageBadge.style.display = "inline-flex";
             }
+            saveDraft({
+              clientName: clientNameEl.value.trim() || "Unknown",
+              siteUrl: siteUrlEl.value.trim() || "",
+              triage: data.triage || "routine",
+              text: replyAccumulator,
+              timestamp: Date.now(),
+            });
+            renderDraftHistory();
           }
 
           if (data.error) throw new Error(data.error);
@@ -821,6 +964,7 @@
     nameAutoTag.classList.add("hidden");
     urlAutoTag.classList.add("hidden");
     clientBadge.style.display = "none";
+    clientBadge.classList.remove("no-match");
     replyAccumulator = "";
     responseContent.textContent = "";
     triageBadge.style.display = "none";

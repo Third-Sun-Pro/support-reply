@@ -179,6 +179,22 @@ app.post("/draft-reply", requireAuth, apiLimiter, async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
 
+  const TIMEOUT_MS = 90_000;
+  let finished = false;
+
+  const timeout = setTimeout(() => {
+    if (finished) return;
+    finished = true;
+    log("error", "Draft reply timed out", { reqId: req.id });
+    res.write(`data: ${JSON.stringify({ error: "Request timed out. Please try again." })}\n\n`);
+    res.end();
+  }, TIMEOUT_MS);
+
+  req.on("close", () => {
+    finished = true;
+    clearTimeout(timeout);
+  });
+
   try {
     log("info", "Drafting reply", { reqId: req.id, clientName: clientName || null });
 
@@ -186,18 +202,23 @@ app.post("/draft-reply", requireAuth, apiLimiter, async (req, res) => {
       email.trim(),
       { clientName: clientName?.trim() || null, siteUrl: siteUrl?.trim() || null },
       (delta) => {
-        res.write(`data: ${JSON.stringify({ text: delta })}\n\n`);
+        if (!finished) res.write(`data: ${JSON.stringify({ text: delta })}\n\n`);
       }
     );
 
-    log("info", "Reply drafted", { reqId: req.id, triage, usage });
-
-    res.write(`data: ${JSON.stringify({ done: true, triage })}\n\n`);
-    res.end();
+    if (!finished) {
+      log("info", "Reply drafted", { reqId: req.id, triage, usage });
+      res.write(`data: ${JSON.stringify({ done: true, triage })}\n\n`);
+    }
   } catch (err) {
-    log("error", "Draft reply failed", { reqId: req.id, error: err.message || String(err) });
-    res.write(`data: ${JSON.stringify({ error: cleanErrorMessage(err) })}\n\n`);
-    res.end();
+    if (!finished) {
+      log("error", "Draft reply failed", { reqId: req.id, error: err.message || String(err) });
+      res.write(`data: ${JSON.stringify({ error: cleanErrorMessage(err) })}\n\n`);
+    }
+  } finally {
+    finished = true;
+    clearTimeout(timeout);
+    if (!res.writableEnded) res.end();
   }
 });
 

@@ -89,16 +89,31 @@ async function draftReplyStream(emailText, context, onChunk) {
   const stream = client.messages.stream(params);
 
   let fullText = "";
+  let flushedTo = 0;
+  const MAX_TAG_LEN = 12; // length of "[NEEDS TROY]"
+
+  function flushSafeText() {
+    // Hold back the last MAX_TAG_LEN chars — they might be a partial triage tag
+    const safeEnd = Math.max(flushedTo, fullText.length - MAX_TAG_LEN);
+    if (safeEnd > flushedTo) {
+      onChunk(fullText.slice(flushedTo, safeEnd));
+      flushedTo = safeEnd;
+    }
+  }
 
   stream.on("text", (delta) => {
     fullText += delta;
-    // Don't stream the triage tag to the frontend
-    if (!delta.includes("[NEEDS") && !delta.includes("[ROUTINE")) {
-      onChunk(delta);
-    }
+    flushSafeText();
   });
 
   const finalMessage = await stream.finalMessage();
+
+  // Final flush: strip the triage tag and emit any remaining safe text
+  const cleanedFinal = stripTriageTag(fullText);
+  if (flushedTo < cleanedFinal.length) {
+    onChunk(cleanedFinal.slice(flushedTo));
+  }
+
   const durationMs = Date.now() - start;
   const markdownText = finalMessage.content[0].text;
   const triage = extractTriage(markdownText);

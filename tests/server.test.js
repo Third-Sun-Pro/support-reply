@@ -114,10 +114,16 @@ describe("Logout", () => {
 
 describe("Generate helpers", () => {
   it("extracts triage from response text", async () => {
-    const { extractTriage, stripTriageTag } = await import("../generate.js");
+    const { extractTriage } = await import("../generate.js");
     expect(extractTriage("Here is a reply\n\n[NEEDS TROY]")).toBe("needs-troy");
     expect(extractTriage("Here is a reply\n\n[ROUTINE]")).toBe("routine");
     expect(extractTriage("No tag here")).toBe("routine");
+  });
+
+  it("extracts triage with extra whitespace", async () => {
+    const { extractTriage } = await import("../generate.js");
+    expect(extractTriage("Reply text\n\n[NEEDS TROY]\n")).toBe("needs-troy");
+    expect(extractTriage("Reply text  [NEEDS TROY]  ")).toBe("needs-troy");
   });
 
   it("strips triage tags from text", async () => {
@@ -125,5 +131,12 @@ describe("Generate helpers", () => {
     expect(stripTriageTag("Reply text\n\n[NEEDS TROY]")).toBe("Reply text");
     expect(stripTriageTag("Reply text\n\n[ROUTINE]")).toBe("Reply text");
     expect(stripTriageTag("Just text")).toBe("Just text");
+  });
+
+  it("strips triage tags with varying whitespace", async () => {
+    const { stripTriageTag } = await import("../generate.js");
+    expect(stripTriageTag("Reply text\n\n\n[NEEDS TROY]\n")).toBe("Reply text");
+    expect(stripTriageTag("Reply text\n[ROUTINE]\n")).toBe("Reply text");
+    expect(stripTriageTag("Reply text\n\n[NEEDS TROY]  ")).toBe("Reply text");
   });
 });
