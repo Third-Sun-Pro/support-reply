@@ -21,12 +21,3 @@ This file grows over time as the team logs incidents. Each entry captures what h
   4. Audited admin user accounts
 - **Lesson:** Extension vulnerabilities can affect many sites at once. When a critical advisory comes in, check ALL sites using that extension immediately. Maintain a list of which extensions are installed on which sites.
 - **Handled by:** Troy
-
----
-
-## 2026-03-10 — Test Incident
-- **Severity:** Low
-- **Affected:** None
-- **Issue:** This is a test incident for automated testing
-- **Resolution:** No action needed
-- **Handled by:** Test Suite

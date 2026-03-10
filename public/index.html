@@ -634,8 +634,21 @@
       font-size: 0.82rem;
     }
 
-    .incident-form input[type="text"] {
+    .incident-form input[type="text"],
+    .incident-form select {
       font-size: 0.82rem;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--glass-border-focus);
+      box-shadow: 0 0 0 3px var(--rose-glow);
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    select option {
+      background: var(--navy-mid);
+      color: var(--text);
     }
 
     .hidden { display: none !important; }
@@ -820,7 +833,13 @@
         <div class="field-row">
           <div class="field-group">
             <label for="incidentSeverity">Severity</label>
-            <input type="text" id="incidentSeverity" placeholder="e.g. Critical, High, Low">
+            <select id="incidentSeverity" style="width:100%;padding:0.72rem 0.95rem;border:1px solid var(--glass-border);border-radius:10px;font-family:inherit;font-size:0.82rem;color:var(--text);background:var(--input-bg);appearance:none;-webkit-appearance:none;cursor:pointer;">
+              <option value="">Select...</option>
+              <option value="Critical">Critical</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
           </div>
           <div class="field-group">
             <label for="incidentAffected">Affected</label>

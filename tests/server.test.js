@@ -1,11 +1,17 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import request from "supertest";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 process.env.APP_PASSWORD = "test-password";
 process.env.ANTHROPIC_API_KEY = "sk-ant-test-key";
 process.env.NODE_ENV = "test";
 
 const app = (await import("../server.js")).default;
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const incidentsPath = path.join(__dirname, "..", "knowledge", "incidents.md");
 
 async function getAuthCookie() {
   const res = await request(app)
@@ -140,6 +146,10 @@ describe("Q&A endpoint", () => {
 });
 
 describe("Incidents endpoint", () => {
+  let incidentsSnapshot;
+  beforeAll(() => { incidentsSnapshot = fs.readFileSync(incidentsPath, "utf-8"); });
+  afterAll(() => { fs.writeFileSync(incidentsPath, incidentsSnapshot, "utf-8"); });
+
   it("rejects without auth", async () => {
     const res = await request(app)
       .post("/incidents")
