@@ -4,23 +4,35 @@ const path = require("path");
 const Anthropic = require("@anthropic-ai/sdk");
 
 // ---------------------------------------------------------------------------
-// Load knowledge base at startup
+// Load knowledge base and system prompts at startup
 // ---------------------------------------------------------------------------
-const systemPrompt = fs.readFileSync(path.join(__dirname, "system-prompt.md"), "utf-8");
+const draftSystemPrompt = fs.readFileSync(path.join(__dirname, "system-prompt.md"), "utf-8");
+const qaSystemPrompt = fs.readFileSync(path.join(__dirname, "qa-system-prompt.md"), "utf-8");
 
 const knowledgeDir = path.join(__dirname, "knowledge");
-const knowledgeFiles = fs.readdirSync(knowledgeDir)
-  .filter((f) => f.endsWith(".md"))
-  .sort();
 
-const knowledgeText = knowledgeFiles
-  .map((f) => fs.readFileSync(path.join(knowledgeDir, f), "utf-8"))
-  .join("\n\n---\n\n");
+let knowledgeText = loadKnowledgeText();
+
+function loadKnowledgeText() {
+  const files = fs.readdirSync(knowledgeDir)
+    .filter((f) => f.endsWith(".md"))
+    .sort();
+  return files
+    .map((f) => fs.readFileSync(path.join(knowledgeDir, f), "utf-8"))
+    .join("\n\n---\n\n");
+}
 
 // ---------------------------------------------------------------------------
-// Build request params
+// Reload knowledge (called after incident logging)
 // ---------------------------------------------------------------------------
-function buildRequestParams(emailText, context = {}) {
+function reloadKnowledge() {
+  knowledgeText = loadKnowledgeText();
+}
+
+// ---------------------------------------------------------------------------
+// Build request params — Draft Reply mode
+// ---------------------------------------------------------------------------
+function buildDraftParams(emailText, context = {}) {
   const contentBlocks = [];
 
   // Knowledge base (cached — reused across requests)
@@ -48,7 +60,44 @@ function buildRequestParams(emailText, context = {}) {
     system: [
       {
         type: "text",
-        text: systemPrompt,
+        text: draftSystemPrompt,
+        cache_control: { type: "ephemeral" },
+      },
+    ],
+    messages: [
+      {
+        role: "user",
+        content: contentBlocks,
+      },
+    ],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Build request params — Q&A mode
+// ---------------------------------------------------------------------------
+function buildQAParams(question, category = null) {
+  const contentBlocks = [];
+
+  contentBlocks.push({
+    type: "text",
+    text: `## Reference Knowledge Base\n\n${knowledgeText}`,
+    cache_control: { type: "ephemeral" },
+  });
+
+  let userMessage = "";
+  if (category) userMessage += `Category: ${category}\n\n`;
+  userMessage += `## Question\n\n${question}\n\n## Instructions\n\nAnswer this question using the knowledge base above. Follow the system prompt guidelines. Be concise and practical.`;
+
+  contentBlocks.push({ type: "text", text: userMessage });
+
+  return {
+    model: process.env.CLAUDE_MODEL || "claude-sonnet-4-6",
+    max_tokens: 2048,
+    system: [
+      {
+        type: "text",
+        text: qaSystemPrompt,
         cache_control: { type: "ephemeral" },
       },
     ],
@@ -80,11 +129,11 @@ function stripTriageTag(text) {
 }
 
 // ---------------------------------------------------------------------------
-// Streaming generation
+// Streaming generation — Draft Reply
 // ---------------------------------------------------------------------------
 async function draftReplyStream(emailText, context, onChunk) {
   const client = new Anthropic({ maxRetries: 5 });
-  const params = buildRequestParams(emailText, context);
+  const params = buildDraftParams(emailText, context);
   const start = Date.now();
   const stream = client.messages.stream(params);
 
@@ -130,4 +179,68 @@ async function draftReplyStream(emailText, context, onChunk) {
   return { triage, usage };
 }
 
-module.exports = { draftReplyStream, buildRequestParams, extractTriage, stripTriageTag };
+// ---------------------------------------------------------------------------
+// Streaming generation — Q&A
+// ---------------------------------------------------------------------------
+async function answerStream(question, category, onChunk) {
+  const client = new Anthropic({ maxRetries: 5 });
+  const params = buildQAParams(question, category);
+  const start = Date.now();
+  const stream = client.messages.stream(params);
+
+  let fullText = "";
+
+  stream.on("text", (delta) => {
+    fullText += delta;
+    onChunk(delta);
+  });
+
+  const finalMessage = await stream.finalMessage();
+
+  const durationMs = Date.now() - start;
+  const usage = finalMessage.usage
+    ? {
+        input: finalMessage.usage.input_tokens,
+        output: finalMessage.usage.output_tokens,
+        cacheRead: finalMessage.usage.cache_read_input_tokens || 0,
+        durationMs,
+      }
+    : null;
+
+  return { usage };
+}
+
+// ---------------------------------------------------------------------------
+// Log incident — append to incidents.md
+// ---------------------------------------------------------------------------
+function logIncident(incident) {
+  const incidentsPath = path.join(__dirname, "knowledge", "incidents.md");
+  const date = new Date().toISOString().split("T")[0];
+  const entry = `
+---
+
+## ${date} — ${incident.title}
+- **Severity:** ${incident.severity || "Unknown"}
+- **Affected:** ${incident.affected || "Unknown"}
+- **Issue:** ${incident.description}
+- **Resolution:** ${incident.resolution || "Pending"}
+- **Handled by:** ${incident.handler || "Unknown"}
+`;
+  fs.appendFileSync(incidentsPath, entry, "utf-8");
+
+  // Reload knowledge text so new incidents are included in future requests
+  reloadKnowledge();
+
+  return { date, title: incident.title };
+}
+
+module.exports = {
+  draftReplyStream,
+  answerStream,
+  logIncident,
+  reloadKnowledge,
+  buildDraftParams,
+  buildQAParams,
+  extractTriage,
+  stripTriageTag,
+};

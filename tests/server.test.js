@@ -50,7 +50,7 @@ describe("Routes", () => {
   it("serves index.html at /", async () => {
     const res = await request(app).get("/");
     expect(res.status).toBe(200);
-    expect(res.text).toContain("Support Reply");
+    expect(res.text).toContain("Support Hub");
   });
 
   it("rejects draft-reply without auth", async () => {
@@ -109,6 +109,79 @@ describe("Logout", () => {
     const setCookie = res.headers["set-cookie"];
     expect(setCookie).toBeDefined();
     expect(setCookie[0]).toContain("auth_token=;");
+  });
+});
+
+describe("Q&A endpoint", () => {
+  it("rejects without auth", async () => {
+    const res = await request(app)
+      .post("/ask")
+      .send({ question: "How do I edit an article?" });
+    expect(res.status).toBe(401);
+  });
+
+  it("rejects without question", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/ask")
+      .set("Cookie", cookie)
+      .send({});
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects with empty question", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/ask")
+      .set("Cookie", cookie)
+      .send({ question: "   " });
+    expect(res.status).toBe(400);
+  });
+});
+
+describe("Incidents endpoint", () => {
+  it("rejects without auth", async () => {
+    const res = await request(app)
+      .post("/incidents")
+      .send({ title: "Test", description: "Test incident" });
+    expect(res.status).toBe(401);
+  });
+
+  it("rejects without title", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/incidents")
+      .set("Cookie", cookie)
+      .send({ description: "Something happened" });
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects without description", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/incidents")
+      .set("Cookie", cookie)
+      .send({ title: "Test Incident" });
+    expect(res.status).toBe(400);
+  });
+
+  it("logs an incident with valid data", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/incidents")
+      .set("Cookie", cookie)
+      .send({
+        title: "Test Incident",
+        severity: "Low",
+        affected: "None",
+        description: "This is a test incident for automated testing",
+        resolution: "No action needed",
+        handler: "Test Suite",
+      });
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.title).toBe("Test Incident");
+    expect(res.body.date).toBeDefined();
   });
 });
 

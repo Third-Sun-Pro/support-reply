@@ -5,7 +5,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const fs = require("fs");
-const { draftReplyStream } = require("./generate");
+const { draftReplyStream, answerStream, logIncident } = require("./generate");
 
 // ---------------------------------------------------------------------------
 // Structured logger
@@ -219,6 +219,91 @@ app.post("/draft-reply", requireAuth, apiLimiter, async (req, res) => {
     finished = true;
     clearTimeout(timeout);
     if (!res.writableEnded) res.end();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Ask a question — streaming Q&A endpoint
+// ---------------------------------------------------------------------------
+app.post("/ask", requireAuth, apiLimiter, async (req, res) => {
+  const { question, category } = req.body;
+
+  if (!question || !question.trim()) {
+    return res.status(400).json({ error: "Question is required." });
+  }
+
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+
+  const TIMEOUT_MS = 90_000;
+  let finished = false;
+
+  const timeout = setTimeout(() => {
+    if (finished) return;
+    finished = true;
+    log("error", "Q&A timed out", { reqId: req.id });
+    res.write(`data: ${JSON.stringify({ error: "Request timed out. Please try again." })}\n\n`);
+    res.end();
+  }, TIMEOUT_MS);
+
+  req.on("close", () => {
+    finished = true;
+    clearTimeout(timeout);
+  });
+
+  try {
+    log("info", "Answering question", { reqId: req.id, category: category || null });
+
+    const { usage } = await answerStream(
+      question.trim(),
+      category?.trim() || null,
+      (delta) => {
+        if (!finished) res.write(`data: ${JSON.stringify({ text: delta })}\n\n`);
+      }
+    );
+
+    if (!finished) {
+      log("info", "Question answered", { reqId: req.id, usage });
+      res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+    }
+  } catch (err) {
+    if (!finished) {
+      log("error", "Q&A failed", { reqId: req.id, error: err.message || String(err) });
+      res.write(`data: ${JSON.stringify({ error: cleanErrorMessage(err) })}\n\n`);
+    }
+  } finally {
+    finished = true;
+    clearTimeout(timeout);
+    if (!res.writableEnded) res.end();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Log incident
+// ---------------------------------------------------------------------------
+app.post("/incidents", requireAuth, (req, res) => {
+  const { title, severity, affected, description, resolution, handler } = req.body;
+
+  if (!title || !title.trim() || !description || !description.trim()) {
+    return res.status(400).json({ error: "Title and description are required." });
+  }
+
+  try {
+    const result = logIncident({
+      title: title.trim(),
+      severity: severity?.trim() || undefined,
+      affected: affected?.trim() || undefined,
+      description: description.trim(),
+      resolution: resolution?.trim() || undefined,
+      handler: handler?.trim() || undefined,
+    });
+
+    log("info", "Incident logged", { reqId: req.id, ...result });
+    res.json({ success: true, ...result });
+  } catch (err) {
+    log("error", "Incident logging failed", { reqId: req.id, error: err.message });
+    res.status(500).json({ error: "Failed to log incident." });
   }
 });
 

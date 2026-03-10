@@ -265,3 +265,67 @@ This is the most common client question area.
 - **Common client questions:** Formatting text, inserting images, creating links, pasting from Word
 - **Key settings:** Editor profiles, allowed HTML tags, image upload settings
 - **Note:** Internal editor links should never appear on the public site — if they do, there's a configuration issue
+
+---
+
+## Payment Forms & Stripe Integration
+- **Stripe** is the primary payment processor for client sites with donation/payment forms
+- Two approaches for payment forms:
+
+### Embedded Credit Card Form (current default on most sites)
+- Credit card fields appear directly on the page
+- Lower friction — user stays on the site
+- Does NOT support Apple Pay or Google Pay
+- Configured through the Joomla form/payment extension
+
+### Stripe Hosted Checkout (redirect)
+- User clicks a button and is taken to a Stripe-hosted payment page
+- **Supports Apple Pay, Google Pay**, and other payment methods
+- Works better on mobile
+- Adds a redirect step (some friction)
+- People are used to secondary payment steps — generally recommended for mobile-heavy audiences
+
+### Can You Have Both?
+- Technically yes — you can offer both embedded and Stripe redirect
+- But the user has to choose between them, which isn't ideal UX
+- **Recommendation:** Go with Stripe hosted checkout. Better mobile experience, more payment options, and users are accustomed to the redirect pattern.
+
+### Apple Pay Specifics
+- Only works on mobile (Safari on iOS)
+- Requires Stripe hosted checkout — cannot be embedded
+- Troy handles the Stripe configuration
+
+---
+
+## Occasionally Used Extensions
+
+### Regular Labs
+- Various Joomla utilities and extensions
+- Advanced module/plugin management tools
+
+### Joomla51
+- Template framework and templates
+- Responsive design components
+
+### Joomlatools
+- Content management extensions
+- File management tools
+
+### Techjoomla
+- Specialized Joomla extensions
+- Social/community features
+
+### JoomDonate
+- Donation management for nonprofits
+- Payment processing integration
+- Used on several nonprofit client sites
+
+---
+
+## Extension Management Best Practices
+1. Always back up before updating extensions
+2. Check compatibility with current Joomla version before updating
+3. If an extension breaks after update: restore from backup, report to vendor
+4. Monitor security advisories for installed extensions (Joomla Vulnerable Extensions List)
+5. Disable (don't delete) unused extensions until confirmed safe to remove
+6. Troy handles complex extension issues and server-side configuration

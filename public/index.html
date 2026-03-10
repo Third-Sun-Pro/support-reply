@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Support Reply - Third Sun</title>
+  <title>Support Hub - Third Sun</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -150,9 +150,51 @@
       color: var(--text-dim);
       font-size: 0.78rem;
       font-weight: 400;
-      margin-bottom: 2rem;
+      margin-bottom: 1.2rem;
       letter-spacing: 0.02em;
     }
+
+    /* ── Tabs ── */
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 0.01em;
+    }
+
+    .tab-btn:not(:last-child) {
+      border-right: 1px solid var(--glass-border);
+    }
+
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(201, 160, 160, 0.15), rgba(212, 165, 116, 0.1));
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .tab-view { display: none; }
+    .tab-view.active { display: block; }
 
     /* ── Form elements ── */
     label {
@@ -391,6 +433,51 @@
     .response-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
     .response-content::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
 
+    /* ── Q&A answer area — markdown rendered ── */
+    .qa-answer-content {
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 1.1rem 1.2rem;
+      min-height: 60px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-size: 0.85rem;
+      line-height: 1.75;
+      color: var(--text);
+    }
+
+    .qa-answer-content::-webkit-scrollbar { width: 5px; }
+    .qa-answer-content::-webkit-scrollbar-track { background: transparent; }
+    .qa-answer-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+    .qa-answer-content::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
+
+    .qa-answer-content h1, .qa-answer-content h2, .qa-answer-content h3 {
+      color: var(--rose-light);
+      margin: 1rem 0 0.4rem;
+      font-weight: 600;
+    }
+    .qa-answer-content h1 { font-size: 1.1rem; }
+    .qa-answer-content h2 { font-size: 0.95rem; }
+    .qa-answer-content h3 { font-size: 0.88rem; }
+    .qa-answer-content h1:first-child, .qa-answer-content h2:first-child, .qa-answer-content h3:first-child { margin-top: 0; }
+    .qa-answer-content p { margin: 0.4rem 0; }
+    .qa-answer-content ul, .qa-answer-content ol { padding-left: 1.3rem; margin: 0.4rem 0; }
+    .qa-answer-content li { margin: 0.2rem 0; }
+    .qa-answer-content strong { color: var(--text); font-weight: 600; }
+    .qa-answer-content code {
+      background: rgba(255, 255, 255, 0.06);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+    .qa-answer-content a {
+      color: var(--copper);
+      text-decoration: none;
+    }
+    .qa-answer-content a:hover { text-decoration: underline; }
+
     .response-actions {
       display: flex;
       gap: 0.6rem;
@@ -425,8 +512,22 @@
       margin-top: 0.75rem;
     }
 
+    /* ── Success ── */
+    .success-msg {
+      display: none;
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid rgba(126, 196, 163, 0.2);
+      padding: 0.6rem 0.9rem;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-top: 0.75rem;
+    }
+
     /* ── Streaming cursor ── */
-    .streaming .response-content::after {
+    .streaming .response-content::after,
+    .streaming .qa-answer-content::after {
       content: '';
       display: inline-block;
       width: 2px;
@@ -439,8 +540,41 @@
 
     @keyframes blink { 50% { opacity: 0; } }
 
+    /* ── Category pills ── */
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .category-pill {
+      padding: 0.35rem 0.75rem;
+      border: 1px solid var(--glass-border);
+      border-radius: 100px;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .category-pill:hover {
+      border-color: rgba(201, 160, 160, 0.3);
+      color: var(--text);
+      background: rgba(201, 160, 160, 0.08);
+    }
+
+    .category-pill.active {
+      border-color: var(--rose);
+      color: var(--rose-light);
+      background: rgba(201, 160, 160, 0.12);
+    }
+
     /* ── Draft history ── */
-    .draft-history-item {
+    .history-item {
       padding: 0.6rem 0.85rem;
       background: var(--input-bg);
       border: 1px solid var(--glass-border);
@@ -450,8 +584,8 @@
       transition: border-color 0.2s ease;
       font-size: 0.8rem;
     }
-    .draft-history-item:hover { border-color: var(--glass-border-focus); }
-    .draft-history-item .draft-meta {
+    .history-item:hover { border-color: var(--glass-border-focus); }
+    .history-item .history-meta {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -459,11 +593,49 @@
       color: var(--text-dim);
       font-size: 0.72rem;
     }
-    .draft-history-item .draft-preview {
+    .history-item .history-preview {
       color: var(--text);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    /* ── Incident form ── */
+    .incident-toggle {
+      margin-top: 0.75rem;
+      text-align: center;
+    }
+
+    .incident-toggle button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.72rem;
+      cursor: pointer;
+      padding: 0.3rem 0.6rem;
+      transition: color 0.2s ease;
+    }
+
+    .incident-toggle button:hover { color: var(--text-dim); }
+
+    .incident-form {
+      display: none;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .incident-form .field-group { margin-bottom: 0.7rem; }
+
+    .incident-form textarea {
+      min-height: 80px;
+      font-family: inherit;
+      font-size: 0.82rem;
+    }
+
+    .incident-form input[type="text"] {
+      font-size: 0.82rem;
     }
 
     .hidden { display: none !important; }
@@ -490,6 +662,7 @@
       .card { padding: 2rem; }
       .app-container { padding: 1.5rem; }
       .field-row { flex-direction: column; gap: 0; }
+      .tab-btn { font-size: 0.72rem; padding: 0.5rem 0.6rem; }
     }
   </style>
 </head>
@@ -501,7 +674,7 @@
       <div class="logo-mark">
         <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 12H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1z"/></svg>
       </div>
-      <h1>Support Reply</h1>
+      <h1>Support Hub</h1>
     </div>
     <p class="tagline">Third Sun Productions</p>
 
@@ -521,64 +694,164 @@
       <div class="logo-mark">
         <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 12H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1z"/></svg>
       </div>
-      <h1>Support Reply</h1>
+      <h1>Support Hub</h1>
     </div>
-    <p class="tagline">Paste a client email, get a ready-to-send reply</p>
+    <p class="tagline">Draft client replies or ask the knowledge base</p>
 
-    <form id="draftForm">
-      <div class="field-group">
-        <label for="emailText">Client Email</label>
-        <textarea id="emailText" placeholder="Paste the client's email here..." required></textarea>
-      </div>
-
-      <div class="client-badge" id="clientBadge">
-        <span class="org-name" id="orgName"></span>
-        <span class="org-type" id="orgType"></span>
-      </div>
-
-      <div class="field-row">
-        <div class="field-group">
-          <label for="clientName">Client Name <span class="auto-tag hidden" id="nameAutoTag">auto-detected</span></label>
-          <input type="text" id="clientName" placeholder="e.g. Aimee" required>
-        </div>
-        <div class="field-group">
-          <label for="siteUrl">Site URL <span class="auto-tag hidden" id="urlAutoTag">auto-detected</span></label>
-          <input type="text" id="siteUrl" placeholder="e.g. uaf.org" required list="clientSuggestions">
-          <datalist id="clientSuggestions"></datalist>
-        </div>
-      </div>
-
-      <button type="submit" class="btn btn-primary" id="draftBtn">
-        <span id="draftBtnText">Draft Reply</span>
-        <span class="spinner" id="draftSpinner"></span>
-      </button>
-      <div class="error-msg" id="draftError"></div>
-    </form>
-
-    <div class="response-area" id="responseArea">
-      <div class="divider"></div>
-      <div class="response-header">
-        <span class="response-label">Draft Reply</span>
-        <span class="triage-badge" id="triageBadge"></span>
-      </div>
-      <div class="response-content" id="responseContent"></div>
-      <div class="response-actions">
-        <button class="btn btn-copy" id="copyBtn">Copy to Clipboard</button>
-        <button class="btn btn-ghost" id="startOverBtn">Start Over</button>
-      </div>
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="draft">Draft Reply</button>
+      <button class="tab-btn" data-tab="qa">Ask a Question</button>
+      <button class="tab-btn" data-tab="incident">Log Incident</button>
     </div>
 
-    <div id="draftHistory" style="display:none;">
-      <div class="divider"></div>
-      <div class="response-header" style="margin-bottom: 0.5rem;">
-        <span class="response-label">Recent Drafts</span>
-        <button class="btn btn-ghost" id="clearHistoryBtn" style="padding: 0.3rem 0.7rem; font-size: 0.7rem;">Clear</button>
+    <!-- ═══ Draft Reply Tab ═══ -->
+    <div class="tab-view active" id="draftView">
+      <form id="draftForm">
+        <div class="field-group">
+          <label for="emailText">Client Email</label>
+          <textarea id="emailText" placeholder="Paste the client's email here..." required></textarea>
+        </div>
+
+        <div class="client-badge" id="clientBadge">
+          <span class="org-name" id="orgName"></span>
+          <span class="org-type" id="orgType"></span>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="clientName">Client Name <span class="auto-tag hidden" id="nameAutoTag">auto-detected</span></label>
+            <input type="text" id="clientName" placeholder="e.g. Aimee" required>
+          </div>
+          <div class="field-group">
+            <label for="siteUrl">Site URL <span class="auto-tag hidden" id="urlAutoTag">auto-detected</span></label>
+            <input type="text" id="siteUrl" placeholder="e.g. uaf.org" required list="clientSuggestions">
+            <datalist id="clientSuggestions"></datalist>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="draftBtn">
+          <span id="draftBtnText">Draft Reply</span>
+          <span class="spinner" id="draftSpinner"></span>
+        </button>
+        <div class="error-msg" id="draftError"></div>
+      </form>
+
+      <div class="response-area" id="responseArea">
+        <div class="divider"></div>
+        <div class="response-header">
+          <span class="response-label">Draft Reply</span>
+          <span class="triage-badge" id="triageBadge"></span>
+        </div>
+        <div class="response-content" id="responseContent"></div>
+        <div class="response-actions">
+          <button class="btn btn-copy" id="copyBtn">Copy to Clipboard</button>
+          <button class="btn btn-ghost" id="startOverBtn">Start Over</button>
+        </div>
       </div>
-      <div id="draftHistoryList"></div>
+
+      <div id="draftHistory" style="display:none;">
+        <div class="divider"></div>
+        <div class="response-header" style="margin-bottom: 0.5rem;">
+          <span class="response-label">Recent Drafts</span>
+          <button class="btn btn-ghost" id="clearDraftHistoryBtn" style="padding: 0.3rem 0.7rem; font-size: 0.7rem;">Clear</button>
+        </div>
+        <div id="draftHistoryList"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Q&A Tab ═══ -->
+    <div class="tab-view" id="qaView">
+      <form id="qaForm">
+        <div class="field-group">
+          <label>Category (optional)</label>
+          <div class="category-pills" id="categoryPills">
+            <button type="button" class="category-pill" data-category="Joomla">Joomla</button>
+            <button type="button" class="category-pill" data-category="Hosting">Hosting</button>
+            <button type="button" class="category-pill" data-category="Domains">Domains</button>
+            <button type="button" class="category-pill" data-category="Troubleshooting">Troubleshooting</button>
+            <button type="button" class="category-pill" data-category="Tools">Tools</button>
+            <button type="button" class="category-pill" data-category="Admin">Admin</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="qaQuestion">Your Question</label>
+          <textarea id="qaQuestion" placeholder="e.g. How do I add a custom field to an Event Booking registration form?" required style="min-height: 100px; font-family: inherit;"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="qaBtn">
+          <span id="qaBtnText">Ask</span>
+          <span class="spinner" id="qaSpinner"></span>
+        </button>
+        <div class="error-msg" id="qaError"></div>
+      </form>
+
+      <div class="response-area" id="qaResponseArea">
+        <div class="divider"></div>
+        <div class="response-header">
+          <span class="response-label">Answer</span>
+        </div>
+        <div class="qa-answer-content" id="qaAnswerContent"></div>
+        <div class="response-actions">
+          <button class="btn btn-copy" id="qaCopyBtn">Copy to Clipboard</button>
+          <button class="btn btn-ghost" id="qaNewQuestionBtn">New Question</button>
+        </div>
+      </div>
+
+      <div id="qaHistory" style="display:none;">
+        <div class="divider"></div>
+        <div class="response-header" style="margin-bottom: 0.5rem;">
+          <span class="response-label">Recent Questions</span>
+          <button class="btn btn-ghost" id="clearQaHistoryBtn" style="padding: 0.3rem 0.7rem; font-size: 0.7rem;">Clear</button>
+        </div>
+        <div id="qaHistoryList"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Incident Tab ═══ -->
+    <div class="tab-view" id="incidentView">
+      <form id="incidentForm">
+        <div class="field-group">
+          <label for="incidentTitle">Title</label>
+          <input type="text" id="incidentTitle" placeholder="e.g. Astroid Template Vulnerability" required>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="incidentSeverity">Severity</label>
+            <input type="text" id="incidentSeverity" placeholder="e.g. Critical, High, Low">
+          </div>
+          <div class="field-group">
+            <label for="incidentAffected">Affected</label>
+            <input type="text" id="incidentAffected" placeholder="e.g. All CloudAccess sites">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="incidentDescription">Description</label>
+          <textarea id="incidentDescription" placeholder="What happened?" required style="min-height: 100px; font-family: inherit;"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label for="incidentResolution">Resolution</label>
+          <textarea id="incidentResolution" placeholder="How was it resolved? (Leave blank if still pending)" style="min-height: 70px; font-family: inherit;"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label for="incidentHandler">Handled By</label>
+          <input type="text" id="incidentHandler" placeholder="e.g. Troy, Sabriel">
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="incidentBtn">Log Incident</button>
+        <div class="error-msg" id="incidentError"></div>
+        <div class="success-msg" id="incidentSuccess"></div>
+      </form>
     </div>
   </div>
 
 <script>
+  // ── DOM refs ──
   const loginCard = document.getElementById("loginCard");
   const appContainer = document.getElementById("appContainer");
   const loginForm = document.getElementById("loginForm");
@@ -586,6 +859,7 @@
   const loginError = document.getElementById("loginError");
   const passwordEl = document.getElementById("password");
 
+  // Draft refs
   const draftForm = document.getElementById("draftForm");
   const draftBtn = document.getElementById("draftBtn");
   const draftBtnText = document.getElementById("draftBtnText");
@@ -594,38 +868,121 @@
   const emailTextEl = document.getElementById("emailText");
   const clientNameEl = document.getElementById("clientName");
   const siteUrlEl = document.getElementById("siteUrl");
-
   const responseArea = document.getElementById("responseArea");
   const responseContent = document.getElementById("responseContent");
   const triageBadge = document.getElementById("triageBadge");
   const copyBtn = document.getElementById("copyBtn");
   const startOverBtn = document.getElementById("startOverBtn");
-
   const nameAutoTag = document.getElementById("nameAutoTag");
   const urlAutoTag = document.getElementById("urlAutoTag");
   const clientBadge = document.getElementById("clientBadge");
   const orgNameEl = document.getElementById("orgName");
   const orgTypeEl = document.getElementById("orgType");
   const clientSuggestions = document.getElementById("clientSuggestions");
+  const draftHistory = document.getElementById("draftHistory");
+  const draftHistoryList = document.getElementById("draftHistoryList");
+  const clearDraftHistoryBtn = document.getElementById("clearDraftHistoryBtn");
+
+  // Q&A refs
+  const qaForm = document.getElementById("qaForm");
+  const qaBtn = document.getElementById("qaBtn");
+  const qaBtnText = document.getElementById("qaBtnText");
+  const qaSpinner = document.getElementById("qaSpinner");
+  const qaError = document.getElementById("qaError");
+  const qaQuestion = document.getElementById("qaQuestion");
+  const qaResponseArea = document.getElementById("qaResponseArea");
+  const qaAnswerContent = document.getElementById("qaAnswerContent");
+  const qaCopyBtn = document.getElementById("qaCopyBtn");
+  const qaNewQuestionBtn = document.getElementById("qaNewQuestionBtn");
+  const qaHistory = document.getElementById("qaHistory");
+  const qaHistoryList = document.getElementById("qaHistoryList");
+  const clearQaHistoryBtn = document.getElementById("clearQaHistoryBtn");
+  const categoryPills = document.getElementById("categoryPills");
+
+  // Incident refs
+  const incidentForm = document.getElementById("incidentForm");
+  const incidentBtn = document.getElementById("incidentBtn");
+  const incidentError = document.getElementById("incidentError");
+  const incidentSuccess = document.getElementById("incidentSuccess");
 
   let currentAbortController = null;
   let replyAccumulator = "";
+  let qaAccumulator = "";
   let clientDirectory = [];
+  let selectedCategory = null;
 
-  const draftHistory = document.getElementById("draftHistory");
-  const draftHistoryList = document.getElementById("draftHistoryList");
-  const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+  // ── Tabs ──
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-view").forEach(v => v.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById(btn.dataset.tab + "View").classList.add("active");
+    });
+  });
 
-  // ── Draft history (localStorage) ──
+  // ── Category pills ──
+  categoryPills.addEventListener("click", (e) => {
+    const pill = e.target.closest(".category-pill");
+    if (!pill) return;
+    if (pill.classList.contains("active")) {
+      pill.classList.remove("active");
+      selectedCategory = null;
+    } else {
+      categoryPills.querySelectorAll(".category-pill").forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      selectedCategory = pill.dataset.category;
+    }
+  });
+
+  // ── Helpers ──
+  function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function formatTime(ts) {
+    const d = new Date(ts);
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" })
+      + " " + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  }
+
+  // ── Simple markdown to HTML ──
+  function renderMarkdown(text) {
+    let html = escapeHtml(text);
+    // Headers
+    html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+    html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+    // Bold
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    // Inline code
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // Links
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    // Unordered lists
+    html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+    html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
+    // Ordered lists
+    html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+    // Paragraphs — wrap remaining lines
+    html = html.replace(/^(?!<[hul]|<li)(.*\S.*)$/gm, '<p>$1</p>');
+    // Clean up extra whitespace
+    html = html.replace(/\n{2,}/g, '\n');
+    return html;
+  }
+
+  // ══════════════════════════════════════════════════════
+  // DRAFT REPLY — History
+  // ══════════════════════════════════════════════════════
   const DRAFT_HISTORY_KEY = "support-reply-drafts";
-  const MAX_DRAFTS = 10;
+  const MAX_HISTORY = 10;
 
   function saveDraft(draft) {
     try {
-      const history = JSON.parse(localStorage.getItem(DRAFT_HISTORY_KEY) || "[]");
-      history.unshift(draft);
-      if (history.length > MAX_DRAFTS) history.length = MAX_DRAFTS;
-      localStorage.setItem(DRAFT_HISTORY_KEY, JSON.stringify(history));
+      const h = JSON.parse(localStorage.getItem(DRAFT_HISTORY_KEY) || "[]");
+      h.unshift(draft);
+      if (h.length > MAX_HISTORY) h.length = MAX_HISTORY;
+      localStorage.setItem(DRAFT_HISTORY_KEY, JSON.stringify(h));
     } catch { /* localStorage full or unavailable */ }
   }
 
@@ -634,35 +991,24 @@
     catch { return []; }
   }
 
-  function clearDraftHistory() {
-    localStorage.removeItem(DRAFT_HISTORY_KEY);
-  }
-
-  function escapeHtml(str) {
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  }
-
   function renderDraftHistory() {
     const drafts = loadDrafts();
     if (!drafts.length) { draftHistory.style.display = "none"; return; }
     draftHistory.style.display = "block";
     draftHistoryList.innerHTML = drafts.map((d, i) => {
-      const date = new Date(d.timestamp);
-      const timeStr = date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
-        + " " + date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
       const preview = d.text.slice(0, 80).replace(/\n/g, " ") + (d.text.length > 80 ? "..." : "");
-      return `<div class="draft-history-item" data-index="${i}">
-        <div class="draft-meta">
+      return `<div class="history-item" data-index="${i}">
+        <div class="history-meta">
           <span>${escapeHtml(d.clientName)}${d.siteUrl ? " &middot; " + escapeHtml(d.siteUrl) : ""}</span>
-          <span>${timeStr}</span>
+          <span>${formatTime(d.timestamp)}</span>
         </div>
-        <div class="draft-preview">${escapeHtml(preview)}</div>
+        <div class="history-preview">${escapeHtml(preview)}</div>
       </div>`;
     }).join("");
   }
 
   draftHistoryList.addEventListener("click", (e) => {
-    const item = e.target.closest(".draft-history-item");
+    const item = e.target.closest(".history-item");
     if (!item) return;
     const drafts = loadDrafts();
     const draft = drafts[parseInt(item.dataset.index, 10)];
@@ -686,20 +1032,75 @@
     responseArea.scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
 
-  clearHistoryBtn.addEventListener("click", () => {
-    clearDraftHistory();
+  clearDraftHistoryBtn.addEventListener("click", () => {
+    localStorage.removeItem(DRAFT_HISTORY_KEY);
     renderDraftHistory();
   });
 
-  // ── Auto-detect client name and website from pasted email ──
+  // ══════════════════════════════════════════════════════
+  // Q&A — History
+  // ══════════════════════════════════════════════════════
+  const QA_HISTORY_KEY = "support-hub-qa";
+
+  function saveQA(entry) {
+    try {
+      const h = JSON.parse(localStorage.getItem(QA_HISTORY_KEY) || "[]");
+      h.unshift(entry);
+      if (h.length > MAX_HISTORY) h.length = MAX_HISTORY;
+      localStorage.setItem(QA_HISTORY_KEY, JSON.stringify(h));
+    } catch {}
+  }
+
+  function loadQAs() {
+    try { return JSON.parse(localStorage.getItem(QA_HISTORY_KEY) || "[]"); }
+    catch { return []; }
+  }
+
+  function renderQaHistory() {
+    const items = loadQAs();
+    if (!items.length) { qaHistory.style.display = "none"; return; }
+    qaHistory.style.display = "block";
+    qaHistoryList.innerHTML = items.map((d, i) => {
+      const preview = d.question.slice(0, 80) + (d.question.length > 80 ? "..." : "");
+      return `<div class="history-item" data-index="${i}">
+        <div class="history-meta">
+          <span>${d.category ? escapeHtml(d.category) : "General"}</span>
+          <span>${formatTime(d.timestamp)}</span>
+        </div>
+        <div class="history-preview">${escapeHtml(preview)}</div>
+      </div>`;
+    }).join("");
+  }
+
+  qaHistoryList.addEventListener("click", (e) => {
+    const item = e.target.closest(".history-item");
+    if (!item) return;
+    const items = loadQAs();
+    const entry = items[parseInt(item.dataset.index, 10)];
+    if (!entry) return;
+
+    qaAccumulator = entry.answer;
+    qaAnswerContent.innerHTML = renderMarkdown(entry.answer);
+    qaResponseArea.style.display = "block";
+    qaResponseArea.classList.remove("streaming");
+    qaCopyBtn.textContent = "Copy to Clipboard";
+    qaCopyBtn.classList.remove("copied");
+    qaResponseArea.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+
+  clearQaHistoryBtn.addEventListener("click", () => {
+    localStorage.removeItem(QA_HISTORY_KEY);
+    renderQaHistory();
+  });
+
+  // ══════════════════════════════════════════════════════
+  // Auto-detect client name and website from pasted email
+  // ══════════════════════════════════════════════════════
   function detectClientInfo(text) {
     const result = { name: null, url: null };
-
     const signoffPattern = /(?:thanks|thank you|sincerely|best|regards|cheers|warmly|respectfully|with gratitude)[,!]?\s*\n+\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/im;
     const signoffMatch = text.match(signoffPattern);
-    if (signoffMatch) {
-      result.name = signoffMatch[1].trim();
-    }
+    if (signoffMatch) result.name = signoffMatch[1].trim();
 
     if (!result.name) {
       const letMeKnow = /let me know[,.]?\s*\n+\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/im;
@@ -712,21 +1113,16 @@
     let urlMatch;
     while ((urlMatch = urlPattern.exec(text)) !== null) {
       const domain = urlMatch[1].toLowerCase();
-      if (!/thirdsun|gmail|yahoo|hotmail|outlook|google|stripe|scribehow/.test(domain)) {
-        urls.push(domain);
-      }
+      if (!/thirdsun|gmail|yahoo|hotmail|outlook|google|stripe|scribehow/.test(domain)) urls.push(domain);
     }
     if (urls.length > 0) result.url = urls[0];
-
     return result;
   }
 
   function runDetection() {
     const text = emailTextEl.value;
     if (!text.trim()) return;
-
     const info = detectClientInfo(text);
-
     if (info.name && !clientNameEl.dataset.userEdited) {
       clientNameEl.value = info.name;
       nameAutoTag.classList.remove("hidden");
@@ -744,12 +1140,11 @@
       const res = await fetch("/clients");
       if (res.ok) {
         clientDirectory = await res.json();
-        // Populate datalist with client websites
         clientSuggestions.innerHTML = clientDirectory
           .map(c => `<option value="${c.website}" label="${c.name}">`)
           .join("");
       }
-    } catch { /* silent fail — directory is a nice-to-have */ }
+    } catch {}
   }
 
   function lookupClient(urlValue) {
@@ -788,18 +1183,13 @@
 
   emailTextEl.addEventListener("input", runDetection);
   emailTextEl.addEventListener("paste", () => setTimeout(runDetection, 50));
-
-  clientNameEl.addEventListener("input", () => {
-    clientNameEl.dataset.userEdited = "true";
-    nameAutoTag.classList.add("hidden");
-  });
-  siteUrlEl.addEventListener("input", () => {
-    siteUrlEl.dataset.userEdited = "true";
-    urlAutoTag.classList.add("hidden");
-    lookupClient(siteUrlEl.value);
-  });
+  clientNameEl.addEventListener("input", () => { clientNameEl.dataset.userEdited = "true"; nameAutoTag.classList.add("hidden"); });
+  siteUrlEl.addEventListener("input", () => { siteUrlEl.dataset.userEdited = "true"; urlAutoTag.classList.add("hidden"); lookupClient(siteUrlEl.value); });
   siteUrlEl.addEventListener("change", () => lookupClient(siteUrlEl.value));
 
+  // ══════════════════════════════════════════════════════
+  // Auth
+  // ══════════════════════════════════════════════════════
   fetch("/auth-check")
     .then((r) => r.json())
     .then((data) => { if (data.authenticated) showApp(); else showLogin(); })
@@ -817,6 +1207,7 @@
     emailTextEl.focus();
     loadClientDirectory();
     renderDraftHistory();
+    renderQaHistory();
   }
 
   loginForm.addEventListener("submit", async (e) => {
@@ -837,6 +1228,38 @@
     } finally { loginBtn.disabled = false; }
   });
 
+  // ══════════════════════════════════════════════════════
+  // SSE stream reader (shared)
+  // ══════════════════════════════════════════════════════
+  async function readSSEStream(res, onText, onDone, onError) {
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        if (!line.startsWith("data: ")) continue;
+        const jsonStr = line.slice(6);
+        if (!jsonStr) continue;
+        let data;
+        try { data = JSON.parse(jsonStr); } catch { continue; }
+
+        if (data.text) onText(data.text);
+        if (data.done) onDone(data);
+        if (data.error) onError(new Error(data.error));
+      }
+    }
+  }
+
+  // ══════════════════════════════════════════════════════
+  // Draft Reply — submit
+  // ══════════════════════════════════════════════════════
   draftForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const emailText = emailTextEl.value.trim();
@@ -876,54 +1299,33 @@
       responseArea.style.display = "block";
       responseArea.classList.add("streaming");
 
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop();
-
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          const jsonStr = line.slice(6);
-          if (!jsonStr) continue;
-          let data;
-          try { data = JSON.parse(jsonStr); } catch { continue; }
-
-          if (data.text) {
-            replyAccumulator += data.text;
-            responseContent.textContent = replyAccumulator;
-            responseContent.scrollTop = responseContent.scrollHeight;
+      await readSSEStream(res,
+        (text) => {
+          replyAccumulator += text;
+          responseContent.textContent = replyAccumulator;
+          responseContent.scrollTop = responseContent.scrollHeight;
+        },
+        (data) => {
+          responseArea.classList.remove("streaming");
+          if (data.triage === "needs-troy") {
+            triageBadge.textContent = "Route to Troy";
+            triageBadge.classList.add("needs-troy");
+          } else {
+            triageBadge.textContent = "Routine";
+            triageBadge.classList.add("routine");
           }
-
-          if (data.done) {
-            responseArea.classList.remove("streaming");
-            if (data.triage === "needs-troy") {
-              triageBadge.textContent = "Route to Troy";
-              triageBadge.classList.add("needs-troy");
-              triageBadge.style.display = "inline-flex";
-            } else {
-              triageBadge.textContent = "Routine";
-              triageBadge.classList.add("routine");
-              triageBadge.style.display = "inline-flex";
-            }
-            saveDraft({
-              clientName: clientNameEl.value.trim() || "Unknown",
-              siteUrl: siteUrlEl.value.trim() || "",
-              triage: data.triage || "routine",
-              text: replyAccumulator,
-              timestamp: Date.now(),
-            });
-            renderDraftHistory();
-          }
-
-          if (data.error) throw new Error(data.error);
-        }
-      }
+          triageBadge.style.display = "inline-flex";
+          saveDraft({
+            clientName: clientNameEl.value.trim() || "Unknown",
+            siteUrl: siteUrlEl.value.trim() || "",
+            triage: data.triage || "routine",
+            text: replyAccumulator,
+            timestamp: Date.now(),
+          });
+          renderDraftHistory();
+        },
+        (err) => { throw err; }
+      );
     } catch (err) {
       responseArea.classList.remove("streaming");
       if (err.name === "AbortError") return;
@@ -936,10 +1338,119 @@
     }
   });
 
-  copyBtn.addEventListener("click", async () => {
+  // ══════════════════════════════════════════════════════
+  // Q&A — submit
+  // ══════════════════════════════════════════════════════
+  qaForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const question = qaQuestion.value.trim();
+    if (!question) return;
+
+    qaError.style.display = "none";
+    qaResponseArea.style.display = "none";
+    qaResponseArea.classList.remove("streaming");
+    qaAnswerContent.innerHTML = "";
+    qaAccumulator = "";
+    qaCopyBtn.textContent = "Copy to Clipboard";
+    qaCopyBtn.classList.remove("copied");
+
+    qaBtn.disabled = true;
+    qaBtnText.textContent = "Thinking...";
+    qaSpinner.style.display = "inline-block";
+
+    if (currentAbortController) currentAbortController.abort();
+    currentAbortController = new AbortController();
+
     try {
-      await navigator.clipboard.writeText(replyAccumulator);
-    } catch {
+      const res = await fetch("/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question,
+          category: selectedCategory || undefined,
+        }),
+        signal: currentAbortController.signal,
+      });
+
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Request failed"); }
+
+      qaResponseArea.style.display = "block";
+      qaResponseArea.classList.add("streaming");
+
+      await readSSEStream(res,
+        (text) => {
+          qaAccumulator += text;
+          qaAnswerContent.innerHTML = renderMarkdown(qaAccumulator);
+          qaAnswerContent.scrollTop = qaAnswerContent.scrollHeight;
+        },
+        () => {
+          qaResponseArea.classList.remove("streaming");
+          qaAnswerContent.innerHTML = renderMarkdown(qaAccumulator);
+          saveQA({
+            question,
+            category: selectedCategory || null,
+            answer: qaAccumulator,
+            timestamp: Date.now(),
+          });
+          renderQaHistory();
+        },
+        (err) => { throw err; }
+      );
+    } catch (err) {
+      qaResponseArea.classList.remove("streaming");
+      if (err.name === "AbortError") return;
+      qaError.textContent = err.message;
+      qaError.style.display = "block";
+    } finally {
+      qaBtn.disabled = false;
+      qaBtnText.textContent = "Ask";
+      qaSpinner.style.display = "none";
+    }
+  });
+
+  // ══════════════════════════════════════════════════════
+  // Incident — submit
+  // ══════════════════════════════════════════════════════
+  incidentForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    incidentError.style.display = "none";
+    incidentSuccess.style.display = "none";
+    incidentBtn.disabled = true;
+
+    try {
+      const res = await fetch("/incidents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: document.getElementById("incidentTitle").value.trim(),
+          severity: document.getElementById("incidentSeverity").value.trim() || undefined,
+          affected: document.getElementById("incidentAffected").value.trim() || undefined,
+          description: document.getElementById("incidentDescription").value.trim(),
+          resolution: document.getElementById("incidentResolution").value.trim() || undefined,
+          handler: document.getElementById("incidentHandler").value.trim() || undefined,
+        }),
+      });
+
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Failed to log incident"); }
+
+      const data = await res.json();
+      incidentSuccess.textContent = `Incident "${data.title}" logged for ${data.date}. It's now part of the knowledge base.`;
+      incidentSuccess.style.display = "block";
+      incidentForm.reset();
+    } catch (err) {
+      incidentError.textContent = err.message;
+      incidentError.style.display = "block";
+    } finally {
+      incidentBtn.disabled = false;
+    }
+  });
+
+  // ══════════════════════════════════════════════════════
+  // Action buttons
+  // ══════════════════════════════════════════════════════
+  copyBtn.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(replyAccumulator); }
+    catch {
       const ta = document.createElement("textarea");
       ta.value = replyAccumulator;
       document.body.appendChild(ta);
@@ -970,6 +1481,33 @@
     triageBadge.style.display = "none";
     triageBadge.className = "triage-badge";
     emailTextEl.focus();
+  });
+
+  qaCopyBtn.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(qaAccumulator); }
+    catch {
+      const ta = document.createElement("textarea");
+      ta.value = qaAccumulator;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    qaCopyBtn.textContent = "Copied!";
+    qaCopyBtn.classList.add("copied");
+    setTimeout(() => { qaCopyBtn.textContent = "Copy to Clipboard"; qaCopyBtn.classList.remove("copied"); }, 2000);
+  });
+
+  qaNewQuestionBtn.addEventListener("click", () => {
+    qaResponseArea.style.display = "none";
+    qaResponseArea.classList.remove("streaming");
+    qaError.style.display = "none";
+    qaQuestion.value = "";
+    qaAccumulator = "";
+    qaAnswerContent.innerHTML = "";
+    categoryPills.querySelectorAll(".category-pill").forEach(p => p.classList.remove("active"));
+    selectedCategory = null;
+    qaQuestion.focus();
   });
 </script>
 </body>

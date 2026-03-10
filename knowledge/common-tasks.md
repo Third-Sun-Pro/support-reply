@@ -106,3 +106,33 @@ These are the most frequent support requests from clients. All clients use Jooml
 - Edit existing users or create new ones
 - Set user group (controls permissions)
 - Reset passwords if a client is locked out
+
+## Adding Buttons / Links Above or Below Content
+Common client request: "Can you add a button that links to [page]?" or "Can we move this link/button to a different spot?"
+
+**Approach — Custom HTML in the article:**
+1. Edit the article in JCE
+2. Switch to Source Code view if needed (for precise HTML control)
+3. Add a styled link/button using HTML, e.g.: `<a href="/target-page" class="btn">Button Text</a>`
+4. Position it above or below the main content as requested
+5. Save and preview on frontend
+
+**Approach — Using modules:**
+1. If the button/link needs to appear on multiple pages or in a specific template position, create a Custom HTML module
+2. Extensions > Modules > New > Custom HTML
+3. Add the button HTML
+4. Assign it to the correct menu item(s) and position
+5. This is better for reusable elements that appear across pages
+
+**Approach — Featured Articles on homepage:**
+- To surface a specific article on the homepage, set it as "Featured" (toggle in the article list or in the article editor)
+- The homepage layout determines how featured articles display
+
+**Key principle:** Content placement requests are almost always solvable through article editing, custom modules, or menu item configuration. No server-level work needed.
+
+## Duplicating an Article ("Save as Copy")
+1. Open the article you want to duplicate
+2. Click "Save as Copy" (in the toolbar, next to Save)
+3. The copy opens in the editor with "(2)" appended to the title
+4. Edit the title and content as needed
+5. Save

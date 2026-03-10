@@ -205,3 +205,9 @@ Link clients to these pages at thirdsun.com when relevant.
 
 - **Create a New User Account (Quick):** https://scribehow.com/viewer/Creating_a_New_User_Account__VOg7m6jnSHOgZgarmC-JEQ
   Covers: Creating a new user account with user group assignments. 10 steps.
+
+## Training Resources
+- Private training sessions recorded by Sabriel
+- Monthly group training sessions (attendance has dropped — format may change to bite-size, component-specific trainings)
+- Help docs and Scribe guides are the primary self-service resources
+- Team is exploring interactive web-based training program
