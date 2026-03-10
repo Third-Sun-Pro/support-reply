@@ -195,6 +195,104 @@ describe("Incidents endpoint", () => {
   });
 });
 
+describe("Knowledge endpoint", () => {
+  const hostingPath = path.join(__dirname, "..", "knowledge", "hosting.md");
+  let hostingSnapshot;
+  beforeAll(() => { hostingSnapshot = fs.readFileSync(hostingPath, "utf-8"); });
+  afterAll(() => { fs.writeFileSync(hostingPath, hostingSnapshot, "utf-8"); });
+
+  it("rejects without auth", async () => {
+    const res = await request(app)
+      .post("/knowledge")
+      .send({ category: "hosting", content: "Test heading\nTest content" });
+    expect(res.status).toBe(401);
+  });
+
+  it("rejects without category", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/knowledge")
+      .set("Cookie", cookie)
+      .send({ content: "Test heading\nTest content" });
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects without content", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/knowledge")
+      .set("Cookie", cookie)
+      .send({ category: "hosting" });
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects invalid category", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/knowledge")
+      .set("Cookie", cookie)
+      .send({ category: "../../etc/passwd", content: "Test\nBody" });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain("Invalid category");
+  });
+
+  it("uses first line as heading", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/knowledge")
+      .set("Cookie", cookie)
+      .send({
+        category: "hosting",
+        content: "Test Provider\n- **Type:** Test hosting\n- **Notes:** Automated test entry",
+      });
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.title).toBe("Test Provider");
+    expect(res.body.category).toBe("hosting");
+
+    const fileContent = fs.readFileSync(hostingPath, "utf-8");
+    expect(fileContent).toContain("## Test Provider");
+    expect(fileContent).toContain("- **Type:** Test hosting");
+  });
+});
+
+describe("Knowledge format endpoint", () => {
+  it("rejects without auth", async () => {
+    const res = await request(app)
+      .post("/knowledge/format")
+      .send({ category: "hosting", content: "Some raw content" });
+    expect(res.status).toBe(401);
+  });
+
+  it("rejects without category", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/knowledge/format")
+      .set("Cookie", cookie)
+      .send({ content: "Some raw content" });
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects without content", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/knowledge/format")
+      .set("Cookie", cookie)
+      .send({ category: "hosting" });
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects invalid category", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/knowledge/format")
+      .set("Cookie", cookie)
+      .send({ category: "../../etc/passwd", content: "Some content" });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain("Invalid category");
+  });
+});
+
 describe("Generate helpers", () => {
   it("extracts triage from response text", async () => {
     const { extractTriage } = await import("../generate.js");

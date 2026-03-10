@@ -5,7 +5,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const fs = require("fs");
-const { draftReplyStream, answerStream, logIncident } = require("./generate");
+const { draftReplyStream, answerStream, logIncident, addKnowledge, formatKnowledge } = require("./generate");
 
 // ---------------------------------------------------------------------------
 // Structured logger
@@ -304,6 +304,66 @@ app.post("/incidents", requireAuth, (req, res) => {
   } catch (err) {
     log("error", "Incident logging failed", { reqId: req.id, error: err.message });
     res.status(500).json({ error: "Failed to log incident." });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Format knowledge — AI-powered formatting before saving
+// ---------------------------------------------------------------------------
+app.post("/knowledge/format", requireAuth, apiLimiter, async (req, res) => {
+  const { category, content } = req.body;
+
+  if (!category || !category.trim()) {
+    return res.status(400).json({ error: "Category is required." });
+  }
+  if (!content || !content.trim()) {
+    return res.status(400).json({ error: "Content is required." });
+  }
+
+  try {
+    const result = await formatKnowledge({
+      category: category.trim(),
+      content: content.trim(),
+    });
+
+    log("info", "Knowledge formatted", { reqId: req.id, title: result.title, category: result.category });
+    res.json({ success: true, ...result });
+  } catch (err) {
+    log("error", "Knowledge format failed", { reqId: req.id, error: err.message });
+    if (err.message.startsWith("Invalid category") || err.message.startsWith("Could not extract")) {
+      return res.status(400).json({ error: err.message });
+    }
+    res.status(500).json({ error: cleanErrorMessage(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Add knowledge
+// ---------------------------------------------------------------------------
+app.post("/knowledge", requireAuth, (req, res) => {
+  const { category, content } = req.body;
+
+  if (!category || !category.trim()) {
+    return res.status(400).json({ error: "Category is required." });
+  }
+  if (!content || !content.trim()) {
+    return res.status(400).json({ error: "Content is required." });
+  }
+
+  try {
+    const result = addKnowledge({
+      category: category.trim(),
+      content: content.trim(),
+    });
+
+    log("info", "Knowledge added", { reqId: req.id, ...result });
+    res.json({ success: true, ...result });
+  } catch (err) {
+    log("error", "Add knowledge failed", { reqId: req.id, error: err.message });
+    if (err.message.startsWith("Invalid category")) {
+      return res.status(400).json({ error: err.message });
+    }
+    res.status(500).json({ error: "Failed to add knowledge." });
   }
 });
 

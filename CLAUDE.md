@@ -1,10 +1,11 @@
 # Support Hub — Third Sun Internal Operations Tool
 
 ## What This Is
-Combined support tool for Third Sun Productions with three modes:
+Combined support tool for Third Sun Productions with four modes:
 1. **Draft Reply** — AI-powered client support email drafting with auto-detection, client directory lookup, and triage routing
 2. **Ask a Question** — Internal Q&A against the knowledge base (hosting, domains, Joomla, troubleshooting, tools, business admin)
 3. **Log Incident** — Record security incidents, outages, and issues (appended to knowledge base for future reference)
+4. **Add Knowledge** — Append new sections to knowledge base files (hosting, tasks, components, etc.)
 
 ## Stack
 Node.js, Express 5, Anthropic SDK (`claude-sonnet-4-6`), vanilla HTML/CSS/JS frontend. HMAC-SHA256 cookie auth. SSE streaming. Markdown knowledge files with Anthropic prompt caching.
@@ -12,14 +13,14 @@ Node.js, Express 5, Anthropic SDK (`claude-sonnet-4-6`), vanilla HTML/CSS/JS fro
 ## Project Structure
 ```
 support-reply/
-├── server.js              # Express server — auth, /draft-reply, /ask (SSE), /incidents (POST), /clients
-├── generate.js            # Knowledge loading, Anthropic streaming (draft + Q&A), incident appending
+├── server.js              # Express server — auth, /draft-reply, /ask (SSE), /incidents, /knowledge, /clients
+├── generate.js            # Knowledge loading, Anthropic streaming (draft + Q&A), incident/knowledge appending
 ├── system-prompt.md       # Draft reply persona and response guidelines
 ├── qa-system-prompt.md    # Q&A assistant persona and response guidelines
 ├── package.json
 ├── .env
 ├── public/
-│   └── index.html         # Frontend — tabbed UI (Draft Reply | Ask a Question | Log Incident)
+│   └── index.html         # Frontend — tabbed UI (Draft Reply | Ask a Question | Log Incident | Add Knowledge)
 ├── knowledge/             # Markdown knowledge files (loaded at startup, prompt-cached)
 │   ├── admin.md           # Business admin, QuickBooks, insurance, licenses, expenses
 │   ├── clients.md         # Client directory (names, websites, types, Joomla versions)
@@ -33,7 +34,7 @@ support-reply/
 │   ├── joomla-components.md  # All Joomla extensions with detailed docs, Stripe/payment forms
 │   └── tools-accounts.md  # Dashlane, ReCaptcha, SendGrid, Adobe, team tools
 └── tests/
-    └── server.test.js     # 22 tests — auth, routes, Q&A, incidents, generate helpers
+    └── server.test.js     # 31 tests — auth, routes, Q&A, incidents, knowledge, knowledge format, generate helpers
 ```
 
 ## Running Locally
@@ -51,6 +52,8 @@ npm test                 # Run tests
 - `POST /draft-reply` — SSE streaming email draft (requires auth). Body: `{ email, clientName?, siteUrl? }`
 - `POST /ask` — SSE streaming Q&A (requires auth). Body: `{ question, category? }`
 - `POST /incidents` — Log an incident (requires auth). Body: `{ title, severity?, affected?, description, resolution?, handler? }`
+- `POST /knowledge/format` — AI-format raw content for a knowledge file (requires auth, rate limited). Body: `{ category, content }`
+- `POST /knowledge` — Save a formatted knowledge section (requires auth). Body: `{ category, content }`
 - `POST /logout` — Clear auth cookie
 
 ## Architecture
@@ -58,7 +61,9 @@ npm test                 # Run tests
 - Draft Reply uses `system-prompt.md` as its persona; Q&A uses `qa-system-prompt.md`
 - Both modes share the same knowledge base (prompt caching saves tokens across requests)
 - `incidents.md` is append-only — new incidents are added via the `/incidents` endpoint
-- After logging an incident, knowledge is hot-reloaded so the next question includes the new data
+- Knowledge files are append-only via `/knowledge` — new sections added to any editable file (9 of 12, excluding clients.md and incidents.md)
+- Add Knowledge uses a two-step flow: `/knowledge/format` (Claude AI extracts & formats raw input) → preview → `/knowledge` (save)
+- After logging an incident or adding knowledge, the knowledge cache is hot-reloaded
 - Triage tags (`[NEEDS TROY]` / `[ROUTINE]`) are buffered during streaming to prevent partial display
 
 ## Environment Variables

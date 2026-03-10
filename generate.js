@@ -211,6 +211,101 @@ async function answerStream(question, category, onChunk) {
 }
 
 // ---------------------------------------------------------------------------
+// Editable knowledge files — allowlist (excludes clients.md and incidents.md)
+// ---------------------------------------------------------------------------
+const KNOWLEDGE_FILES = {
+  hosting: "hosting.md",
+  domains: "domains.md",
+  "common-tasks": "common-tasks.md",
+  "joomla-components": "joomla-components.md",
+  "general-issues": "general-issues.md",
+  "tools-accounts": "tools-accounts.md",
+  admin: "admin.md",
+  "help-docs": "help-docs.md",
+  "example-replies": "example-replies.md",
+};
+
+// ---------------------------------------------------------------------------
+// Format knowledge — use Claude to extract and format raw input
+// ---------------------------------------------------------------------------
+async function formatKnowledge({ category, content }) {
+  const filename = KNOWLEDGE_FILES[category];
+  if (!filename) {
+    throw new Error(`Invalid category: ${category}`);
+  }
+
+  // Read a sample of the target file so Claude can match its style
+  const filePath = path.join(knowledgeDir, filename);
+  const existingContent = fs.readFileSync(filePath, "utf-8");
+  // Take first ~2000 chars as a style sample
+  const styleSample = existingContent.slice(0, 2000);
+
+  const client = new Anthropic({ maxRetries: 3 });
+
+  const response = await client.messages.create({
+    model: process.env.CLAUDE_MODEL || "claude-sonnet-4-6",
+    max_tokens: 1024,
+    system: [
+      {
+        type: "text",
+        text: `You are a knowledge base formatter for Third Sun Productions, a web design agency. Your job is to take raw input (emails, notes, meeting notes, pasted content) and extract the relevant information, then format it as a clean markdown section that matches the style of the existing knowledge file.
+
+Rules:
+- Output ONLY the formatted markdown section, nothing else
+- First line must be the section heading (plain text, no ## prefix — that gets added automatically)
+- Use **Bold:** Value format for key-value pairs (matching the existing file style)
+- Strip out email signatures, greetings, email headers, forwarded message markers, and other noise
+- Extract only the operationally useful information
+- Keep it concise — this is a reference document, not a transcript
+- If the input contains client-specific info (names, websites, contact info), include it
+- If the input is unclear or contains no useful knowledge, respond with exactly: NO_USEFUL_CONTENT`,
+      },
+    ],
+    messages: [
+      {
+        role: "user",
+        content: `Here is a sample of the existing "${category}" knowledge file for style reference:\n\n${styleSample}\n\n---\n\nPlease format the following raw input as a new section for this file:\n\n${content}`,
+      },
+    ],
+  });
+
+  const formatted = response.content[0].text.trim();
+
+  if (formatted === "NO_USEFUL_CONTENT") {
+    throw new Error("Could not extract useful knowledge from the provided content. Try adding more specific information.");
+  }
+
+  // Extract title from first line
+  const lines = formatted.split("\n");
+  const title = lines[0].replace(/^#+\s*/, "").trim();
+
+  return { formatted, title, category };
+}
+
+// ---------------------------------------------------------------------------
+// Add knowledge — append a section to a knowledge file
+// ---------------------------------------------------------------------------
+function addKnowledge({ category, content }) {
+  const filename = KNOWLEDGE_FILES[category];
+  if (!filename) {
+    throw new Error(`Invalid category: ${category}`);
+  }
+
+  // First line becomes the ## heading, rest is the body
+  const lines = content.split("\n");
+  const title = lines[0].replace(/^#+\s*/, "").trim();
+  const body = lines.slice(1).join("\n").trim();
+
+  const filePath = path.join(knowledgeDir, filename);
+  const entry = body ? `\n\n## ${title}\n${body}\n` : `\n\n## ${title}\n`;
+  fs.appendFileSync(filePath, entry, "utf-8");
+
+  reloadKnowledge();
+
+  return { category, title };
+}
+
+// ---------------------------------------------------------------------------
 // Log incident — append to incidents.md
 // ---------------------------------------------------------------------------
 function logIncident(incident) {
@@ -238,9 +333,12 @@ module.exports = {
   draftReplyStream,
   answerStream,
   logIncident,
+  addKnowledge,
+  formatKnowledge,
   reloadKnowledge,
   buildDraftParams,
   buildQAParams,
   extractTriage,
   stripTriageTag,
+  KNOWLEDGE_FILES,
 };

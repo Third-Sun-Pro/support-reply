@@ -329,3 +329,17 @@ This is the most common client question area.
 4. Monitor security advisories for installed extensions (Joomla Vulnerable Extensions List)
 5. Disable (don't delete) unused extensions until confirmed safe to remove
 6. Troy handles complex extension issues and server-side configuration
+
+
+## TreeUtah – Private Events for Waiver Collection
+**Client:** TreeUtah (Katerina Mihailidis, Community Outreach Coordinator)
+**Contact:** Katerina@TreeUtah.org
+**Use Case:** Collecting waivers from private groups (e.g., tree planting partners) without publishing a public event
+
+### Solution: Use a Hidden or Password-Protected Event
+
+Event Booking supports private events — no need for Google Forms.
+
+- **Hidden event:** Set the event to "Hidden" so it won't appear on the public events list. Share the direct registration link manually. (Tip: temporarily unhide the event to grab the link, then hide it again.)
+- **Password-protected event:** Set a password on the event — registrants must know the password to access the registration form.
+- Registrations/submissions are stored in the admin area as normal

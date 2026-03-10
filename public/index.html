@@ -19,10 +19,10 @@
       --text: #f0ebe4;
       --text-dim: #9b95a8;
       --text-muted: #5e5872;
-      --glass: rgba(255, 255, 255, 0.04);
-      --glass-border: rgba(255, 255, 255, 0.08);
-      --glass-border-focus: rgba(201, 160, 160, 0.35);
-      --input-bg: rgba(0, 0, 0, 0.25);
+      --glass: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --glass-border-focus: rgba(201, 160, 160, 0.5);
+      --input-bg: rgba(0, 0, 0, 0.45);
       --success: #7ec4a3;
       --success-bg: rgba(126, 196, 163, 0.1);
       --warning: #e4b87c;
@@ -716,6 +716,7 @@
       <button class="tab-btn active" data-tab="draft">Draft Reply</button>
       <button class="tab-btn" data-tab="qa">Ask a Question</button>
       <button class="tab-btn" data-tab="incident">Log Incident</button>
+      <button class="tab-btn" data-tab="knowledge">Add Knowledge</button>
     </div>
 
     <!-- ═══ Draft Reply Tab ═══ -->
@@ -867,6 +868,57 @@
         <div class="success-msg" id="incidentSuccess"></div>
       </form>
     </div>
+
+    <!-- ═══ Add Knowledge Tab ═══ -->
+    <div class="tab-view" id="knowledgeView">
+      <!-- Step 1: Input -->
+      <div id="knowledgeInputStep">
+        <form id="knowledgeFormatForm">
+          <div class="field-group">
+            <label for="knowledgeCategory">Category</label>
+            <select id="knowledgeCategory" style="width:100%;padding:0.72rem 0.95rem;border:1px solid var(--glass-border);border-radius:10px;font-family:inherit;font-size:0.82rem;color:var(--text);background:var(--input-bg);appearance:none;-webkit-appearance:none;cursor:pointer;" required>
+              <option value="">Select a knowledge file...</option>
+              <option value="hosting">Hosting</option>
+              <option value="domains">Domains & DNS</option>
+              <option value="common-tasks">Common Tasks</option>
+              <option value="joomla-components">Joomla Components</option>
+              <option value="general-issues">General Issues & Troubleshooting</option>
+              <option value="tools-accounts">Tools & Accounts</option>
+              <option value="admin">Business Admin</option>
+              <option value="help-docs">Help Docs & Training</option>
+              <option value="example-replies">Example Replies</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="knowledgeContent">Paste anything <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted);font-size:0.62rem;margin-left:0.3rem;">Emails, notes, raw info — AI will format it</span></label>
+            <textarea id="knowledgeContent" placeholder="Paste an email, meeting notes, or any raw info here. Claude will extract the useful bits and format them for the knowledge base." required style="min-height: 180px;"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="knowledgeFormatBtn">
+            <span id="knowledgeFormatBtnText">Format with AI</span>
+            <span class="spinner" id="knowledgeFormatSpinner"></span>
+          </button>
+          <div class="error-msg" id="knowledgeError"></div>
+        </form>
+      </div>
+
+      <!-- Step 2: Preview & Save -->
+      <div id="knowledgePreviewStep" style="display:none;">
+        <div class="field-group">
+          <label>Preview <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted);font-size:0.62rem;margin-left:0.3rem;">Edit if needed before saving</span></label>
+          <div class="qa-answer-content" id="knowledgePreviewRendered" style="margin-bottom: 0.75rem;"></div>
+          <textarea id="knowledgePreviewRaw" style="min-height: 160px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; display:none;"></textarea>
+        </div>
+        <div style="display: flex; gap: 0.6rem;">
+          <button class="btn btn-primary" id="knowledgeSaveBtn" style="flex:1;">Save to Knowledge Base</button>
+          <button class="btn btn-ghost" id="knowledgeEditToggle" style="flex:0 0 auto;">Edit</button>
+          <button class="btn btn-ghost" id="knowledgeBackBtn" style="flex:0 0 auto;">Start Over</button>
+        </div>
+        <div class="error-msg" id="knowledgeSaveError"></div>
+        <div class="success-msg" id="knowledgeSuccess"></div>
+      </div>
+    </div>
   </div>
 
 <script>
@@ -923,6 +975,23 @@
   const incidentBtn = document.getElementById("incidentBtn");
   const incidentError = document.getElementById("incidentError");
   const incidentSuccess = document.getElementById("incidentSuccess");
+
+  // Knowledge refs
+  const knowledgeFormatForm = document.getElementById("knowledgeFormatForm");
+  const knowledgeFormatBtn = document.getElementById("knowledgeFormatBtn");
+  const knowledgeFormatBtnText = document.getElementById("knowledgeFormatBtnText");
+  const knowledgeFormatSpinner = document.getElementById("knowledgeFormatSpinner");
+  const knowledgeError = document.getElementById("knowledgeError");
+  const knowledgeSuccess = document.getElementById("knowledgeSuccess");
+  const knowledgeSaveError = document.getElementById("knowledgeSaveError");
+  const knowledgeInputStep = document.getElementById("knowledgeInputStep");
+  const knowledgePreviewStep = document.getElementById("knowledgePreviewStep");
+  const knowledgePreviewRendered = document.getElementById("knowledgePreviewRendered");
+  const knowledgePreviewRaw = document.getElementById("knowledgePreviewRaw");
+  const knowledgeSaveBtn = document.getElementById("knowledgeSaveBtn");
+  const knowledgeEditToggle = document.getElementById("knowledgeEditToggle");
+  const knowledgeBackBtn = document.getElementById("knowledgeBackBtn");
+  let knowledgeFormatted = null; // holds the AI-formatted result
 
   let currentAbortController = null;
   let replyAccumulator = "";
@@ -1461,6 +1530,129 @@
       incidentError.style.display = "block";
     } finally {
       incidentBtn.disabled = false;
+    }
+  });
+
+  // ══════════════════════════════════════════════════════
+  // Add Knowledge — Step 1: Format with AI
+  // ══════════════════════════════════════════════════════
+  knowledgeFormatForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    knowledgeError.style.display = "none";
+    knowledgeFormatBtn.disabled = true;
+    knowledgeFormatBtnText.textContent = "Formatting...";
+    knowledgeFormatSpinner.style.display = "inline-block";
+
+    try {
+      const res = await fetch("/knowledge/format", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: document.getElementById("knowledgeCategory").value.trim(),
+          content: document.getElementById("knowledgeContent").value.trim(),
+        }),
+      });
+
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Failed to format content"); }
+
+      const data = await res.json();
+      knowledgeFormatted = data;
+
+      // Show preview step
+      knowledgePreviewRendered.innerHTML = renderMarkdown(data.formatted);
+      knowledgePreviewRaw.value = data.formatted;
+      knowledgePreviewRaw.style.display = "none";
+      knowledgeEditToggle.textContent = "Edit";
+      knowledgeInputStep.style.display = "none";
+      knowledgePreviewStep.style.display = "block";
+      knowledgeSuccess.style.display = "none";
+      knowledgeSaveError.style.display = "none";
+    } catch (err) {
+      knowledgeError.textContent = err.message;
+      knowledgeError.style.display = "block";
+    } finally {
+      knowledgeFormatBtn.disabled = false;
+      knowledgeFormatBtnText.textContent = "Format with AI";
+      knowledgeFormatSpinner.style.display = "none";
+    }
+  });
+
+  // ══════════════════════════════════════════════════════
+  // Add Knowledge — Step 2: Preview actions
+  // ══════════════════════════════════════════════════════
+  knowledgeEditToggle.addEventListener("click", () => {
+    const isEditing = knowledgePreviewRaw.style.display !== "none";
+    if (isEditing) {
+      // Switch back to rendered preview, update from raw textarea
+      knowledgeFormatted.formatted = knowledgePreviewRaw.value;
+      const lines = knowledgeFormatted.formatted.split("\n");
+      knowledgeFormatted.title = lines[0].replace(/^#+\s*/, "").trim();
+      knowledgePreviewRendered.innerHTML = renderMarkdown(knowledgeFormatted.formatted);
+      knowledgePreviewRaw.style.display = "none";
+      knowledgePreviewRendered.style.display = "block";
+      knowledgeEditToggle.textContent = "Edit";
+    } else {
+      // Switch to raw edit mode
+      knowledgePreviewRendered.style.display = "none";
+      knowledgePreviewRaw.style.display = "block";
+      knowledgeEditToggle.textContent = "Preview";
+      knowledgePreviewRaw.focus();
+    }
+  });
+
+  knowledgeBackBtn.addEventListener("click", () => {
+    knowledgePreviewStep.style.display = "none";
+    knowledgeInputStep.style.display = "block";
+    knowledgeFormatted = null;
+    knowledgeSuccess.style.display = "none";
+    knowledgeSaveError.style.display = "none";
+  });
+
+  knowledgeSaveBtn.addEventListener("click", async () => {
+    if (!knowledgeFormatted) return;
+    knowledgeSaveError.style.display = "none";
+    knowledgeSuccess.style.display = "none";
+    knowledgeSaveBtn.disabled = true;
+
+    // If in edit mode, grab latest from textarea
+    if (knowledgePreviewRaw.style.display !== "none") {
+      knowledgeFormatted.formatted = knowledgePreviewRaw.value;
+      const lines = knowledgeFormatted.formatted.split("\n");
+      knowledgeFormatted.title = lines[0].replace(/^#+\s*/, "").trim();
+    }
+
+    try {
+      const res = await fetch("/knowledge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: knowledgeFormatted.category,
+          content: knowledgeFormatted.formatted,
+        }),
+      });
+
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Failed to save knowledge"); }
+
+      const data = await res.json();
+      knowledgeSuccess.textContent = `Added "${data.title}" to ${data.category}. It's now part of the knowledge base.`;
+      knowledgeSuccess.style.display = "block";
+      knowledgeSaveBtn.disabled = true;
+      knowledgeSaveBtn.textContent = "Saved!";
+      setTimeout(() => {
+        // Reset everything
+        knowledgePreviewStep.style.display = "none";
+        knowledgeInputStep.style.display = "block";
+        knowledgeFormatted = null;
+        knowledgeSaveBtn.disabled = false;
+        knowledgeSaveBtn.textContent = "Save to Knowledge Base";
+        knowledgeSuccess.style.display = "none";
+        knowledgeFormatForm.reset();
+      }, 3000);
+    } catch (err) {
+      knowledgeSaveError.textContent = err.message;
+      knowledgeSaveError.style.display = "block";
+    } finally {
+      if (knowledgeSaveBtn.textContent !== "Saved!") knowledgeSaveBtn.disabled = false;
     }
   });
 
