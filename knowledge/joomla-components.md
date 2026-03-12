@@ -498,6 +498,82 @@ Article, Book, Breadcrumbs, Course, Event, Fact Check, FAQ, HowTo, Job Posting, 
 
 ---
 
+## DP Calendar (DPCalendar)
+- **What it does:** Full-featured calendar and event management component by Digital Peak. AJAX-powered browsing, multiple calendar views, recurring events, external calendar sync, and optional booking/payments
+- **Where to find it:** Admin → Components → DPCalendar
+- **Compatibility:** Joomla 4.4.4+, 5.x, 6.x. Requires PHP 8.1+
+- **Editions:** Lite (free — core calendar, no booking), Standard/Professional/Premium (paid — booking, payments, CalDAV, external sync)
+- **Documentation:** https://joomla.digital-peak.com/documentation/dpcalendar
+
+### Calendar Views & Navigation
+- **Views available:** Month, Week, Day, and List grids
+- All views are AJAX-powered — no full page reloads when browsing
+- Drag-and-drop to move or resize events directly on the calendar
+- Front-end event creation and editing (click a day to create an event)
+- Nested/hierarchical calendars for organizing events into groups
+
+### Creating & Editing Events
+- Click on any day in the calendar view to create a new event
+- Fill in: title, description, start/end dates, location
+- Mark as "full day" for all-day events
+- Assign to a specific calendar (category)
+- Events can be created from both front-end and back-end
+
+### Recurring Events
+- **Basic patterns:** Daily, weekly, monthly, annually — set up through the UI without writing rules
+- **Expert mode:** Full iCalendar recurrence rule support for complex patterns (e.g., "Every 3 months on the 10th-15th for 10 occurrences")
+- Configure repeat interval (every N days/weeks/months)
+- Set an "Until" date to end the series
+- When editing a recurring event: choose to update all instances or just the selected one
+
+### External Calendar Integration (Paid)
+DPCalendar can import and sync with external calendars:
+- **Google Calendar** — two-way sync (create/edit/delete Google events from Joomla). Requires Google Developer Console client ID and secret
+- **Microsoft Exchange / Office 365 (Outlook)**
+- **iCloud calendars**
+- **CalDAV** — allows external apps (Outlook, Thunderbird, Apple Calendar) to manage DPCalendar events
+- **Facebook Events, Meetup**
+- **iCal format** (any standard .ics feed)
+- **CSV/Spreadsheet import**
+
+### Booking & Payments (Paid)
+- Ticket/reservation system for events with capacity limits
+- **Payment gateways:** PayPal, Stripe, Braintree, Mollie, wire transfer
+- Stripe is most secure — PCI compliant, no sensitive data stored on Joomla server
+- Dynamic pricing that can include payment provider fees
+- Booking settings configurable globally or per menu item
+- Anonymous (non-logged-in) booking supported with appropriate permissions
+
+### Location & Maps
+- Multiple locations per event, with room assignments within locations
+- **Map providers:** Google Maps (requires API key), Mapbox, OpenStreetMap
+- Configure map provider in component Options
+
+### Permissions (ACL)
+- Per-calendar and per-user-group permissions
+- Control: component access, event creation/editing, calendar management
+- Supports anonymous event booking with permission configuration
+
+### Configuration
+- **Global settings:** Component control panel → Options button
+- Most settings can be overridden at the menu item level
+- **Key areas:** Date/time formats, map provider, booking system, payment gateways, permissions
+- **Download ID:** Required for automatic updates of paid versions (from Digital Peak account)
+
+### Common Client Questions
+- "How do I add an event?" → Click on a day in the calendar, or Admin → Components → DPCalendar → Events → New
+- "Can I sync with Google Calendar?" → Yes (paid version). Requires Google API credentials. Set up via DPCalendar → Calendars → External Calendar
+- "How do recurring events work?" → Create an event, expand the Recurring section, choose a pattern (daily/weekly/monthly/annually), set interval and end date
+- "Events aren't showing on the calendar" → Check: event is published, assigned to the correct calendar, calendar is published, menu item points to the right calendar(s)
+- "How do I change the calendar view?" → Menu item settings control which view displays (month/week/day/list). Each menu item can show a different view
+
+### Troubleshooting
+- **Events not displaying:** Verify event and calendar are both published, check menu item is pointed to correct calendar, clear cache
+- **Google Calendar not syncing:** Check API credentials, verify OAuth refresh token is valid, check that the Google Calendar plugin is enabled in Plugin Manager
+- **Booking not working:** Ensure booking is enabled in component Options or menu item settings, check payment gateway configuration, verify user permissions allow booking
+
+---
+
 ## Extension Management Best Practices
 1. Always back up before updating extensions
 2. Check compatibility with current Joomla version before updating

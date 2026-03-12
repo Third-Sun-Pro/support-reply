@@ -17,8 +17,8 @@
       --copper: #d4a574;
       --copper-glow: rgba(212, 165, 116, 0.2);
       --text: #f0ebe4;
-      --text-dim: #9b95a8;
-      --text-muted: #5e5872;
+      --text-dim: #b8b2c4;
+      --text-muted: #807898;
       --glass: rgba(255, 255, 255, 0.08);
       --glass-border: rgba(255, 255, 255, 0.2);
       --glass-border-focus: rgba(201, 160, 160, 0.5);
@@ -111,6 +111,31 @@
       align-items: center;
       gap: 0.85rem;
       margin-bottom: 0.3rem;
+    }
+
+    .header-right {
+      margin-left: auto;
+    }
+
+    .logout-btn {
+      background: none;
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      font-family: inherit;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* ── Select dropdown arrow ── */
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%23b8b2c4' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2rem !important;
     }
 
     .logo-mark {
@@ -1032,7 +1057,10 @@
       .card { padding: 2rem; }
       .app-container { padding: 1.5rem; }
       .field-row { flex-direction: column; gap: 0; }
-      .tab-btn { font-size: 0.72rem; padding: 0.5rem 0.6rem; }
+      .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .tab-btn { font-size: 0.72rem; padding: 0.5rem 0.6rem; white-space: nowrap; flex: 0 0 auto; }
+      .ref-client-card, .ref-doc-card { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+      .ref-badges { align-self: flex-start; }
     }
   </style>
 </head>
@@ -1065,6 +1093,7 @@
         <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 12H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1z"/></svg>
       </div>
       <h1>Support Hub</h1>
+      <div class="header-right"><button class="logout-btn" id="logoutBtn">Sign Out</button></div>
     </div>
     <p class="tagline">Draft client replies or ask the knowledge base</p>
 
@@ -1093,18 +1122,18 @@
         <div class="field-row">
           <div class="field-group">
             <label for="clientName">Client Name <span class="auto-tag hidden" id="nameAutoTag">auto-detected</span></label>
-            <input type="text" id="clientName" placeholder="e.g. Aimee" required>
+            <input type="text" id="clientName" placeholder="e.g. Aimee">
           </div>
           <div class="field-group">
             <label for="siteUrl">Site URL <span class="auto-tag hidden" id="urlAutoTag">auto-detected</span></label>
-            <input type="text" id="siteUrl" placeholder="e.g. uaf.org" required list="clientSuggestions">
+            <input type="text" id="siteUrl" placeholder="e.g. uaf.org" list="clientSuggestions">
             <datalist id="clientSuggestions"></datalist>
           </div>
         </div>
 
         <button type="submit" class="btn btn-primary" id="draftBtn">
           <span id="draftBtnText">Draft Reply</span>
-          <span class="kb-shortcut">⌘↵</span>
+          <span class="kb-shortcut"></span>
           <span class="spinner" id="draftSpinner"></span>
         </button>
         <div class="error-msg" id="draftError"></div>
@@ -1170,7 +1199,7 @@
 
         <button type="submit" class="btn btn-primary" id="qaBtn">
           <span id="qaBtnText">Ask</span>
-          <span class="kb-shortcut">⌘↵</span>
+          <span class="kb-shortcut"></span>
           <span class="spinner" id="qaSpinner"></span>
         </button>
         <div class="error-msg" id="qaError"></div>
@@ -1223,10 +1252,14 @@
 
         <div class="field-group">
           <label for="incidentHandler">Handled By</label>
-          <input type="text" id="incidentHandler" placeholder="e.g. Troy, Sabriel">
+          <select id="incidentHandler">
+            <option value="">Select team member</option>
+            <option value="Troy">Troy</option>
+            <option value="Sabriel">Sabriel</option>
+          </select>
         </div>
 
-        <button type="submit" class="btn btn-primary" id="incidentBtn">Log Incident <span class="kb-shortcut">⌘↵</span></button>
+        <button type="submit" class="btn btn-primary" id="incidentBtn">Log Incident <span class="kb-shortcut"></span></button>
         <div class="error-msg" id="incidentError"></div>
         <div class="success-msg" id="incidentSuccess"></div>
       </form>
@@ -1286,7 +1319,7 @@
 
           <button type="submit" class="btn btn-primary" id="knowledgeFormatBtn">
             <span id="knowledgeFormatBtnText">Format with AI</span>
-            <span class="kb-shortcut">⌘↵</span>
+            <span class="kb-shortcut"></span>
             <span class="spinner" id="knowledgeFormatSpinner"></span>
           </button>
           <div class="error-msg" id="knowledgeError"></div>
@@ -1486,7 +1519,8 @@
     html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
     html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
     // Ordered lists
-    html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+    html = html.replace(/^\d+\. (.+)$/gm, '<oli>$1</oli>');
+    html = html.replace(/((?:<oli>.*<\/oli>\n?)+)/g, (m) => '<ol>' + m.replace(/<\/?oli>/g, (t) => t.replace('oli', 'li')) + '</ol>');
     // Paragraphs — wrap remaining lines
     html = html.replace(/^(?!<[hul]|<li)(.*\S.*)$/gm, '<p>$1</p>');
     // Clean up extra whitespace
@@ -1798,6 +1832,10 @@
   siteUrlEl.addEventListener("input", () => { siteUrlEl.dataset.userEdited = "true"; urlAutoTag.classList.add("hidden"); lookupClient(siteUrlEl.value); });
   siteUrlEl.addEventListener("change", () => lookupClient(siteUrlEl.value));
 
+  // ── Set keyboard shortcut hints based on platform ──
+  const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  document.querySelectorAll(".kb-shortcut").forEach(el => { el.textContent = isMac ? "⌘↵" : "Ctrl↵"; });
+
   // ══════════════════════════════════════════════════════
   // Ctrl/Cmd+Enter to submit forms from textareas
   // ══════════════════════════════════════════════════════
@@ -1831,8 +1869,14 @@
   function showLogin() {
     loginCard.classList.remove("hidden");
     appContainer.classList.add("hidden");
+    passwordEl.value = "";
     passwordEl.focus();
   }
+
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    try { await fetch("/logout", { method: "POST" }); } catch {}
+    showLogin();
+  });
 
   function showApp() {
     loginCard.classList.add("hidden");
@@ -2422,7 +2466,7 @@
       html += `<div class="ref-client-card">
         <div class="ref-client-info">
           <div class="ref-client-name">${escapeHtml(c.name)}</div>
-          <a class="ref-website-link" href="https://${escapeHtml(c.website)}" target="_blank" rel="noopener">${escapeHtml(c.website)}</a>
+          <a class="ref-website-link" href="${c.website.startsWith('http') ? '' : 'https://'}${escapeHtml(c.website)}" target="_blank" rel="noopener">${escapeHtml(c.website)}</a>
         </div>
         <div class="ref-badges">${tBadge}${jBadge}</div>
       </div>`;
@@ -2437,6 +2481,7 @@
   refDocsSearch.addEventListener("input", () => renderHelpDocs());
 
   async function loadHelpDocs() {
+    refDocsResults.innerHTML = '<div class="kb-no-results">Loading help docs...</div>';
     try {
       const res = await fetch("/help-docs");
       if (!res.ok) throw new Error("Failed to load");
