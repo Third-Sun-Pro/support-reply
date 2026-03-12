@@ -76,37 +76,55 @@ function buildDraftParams(emailText, context = {}) {
 // ---------------------------------------------------------------------------
 // Build request params — Q&A mode
 // ---------------------------------------------------------------------------
-function buildQAParams(question, category = null) {
-  const contentBlocks = [];
+function buildQAParams(question, category = null, history = []) {
+  const systemBlocks = [
+    {
+      type: "text",
+      text: qaSystemPrompt,
+      cache_control: { type: "ephemeral" },
+    },
+  ];
 
-  contentBlocks.push({
-    type: "text",
-    text: `## Reference Knowledge Base\n\n${knowledgeText}`,
-    cache_control: { type: "ephemeral" },
-  });
+  const messages = [];
 
-  let userMessage = "";
-  if (category) userMessage += `Category: ${category}\n\n`;
-  userMessage += `## Question\n\n${question}\n\n## Instructions\n\nAnswer this question using the knowledge base above. Follow the system prompt guidelines. Be concise and practical.`;
+  // First user message always includes the knowledge base (cached)
+  const firstUserContent = [
+    {
+      type: "text",
+      text: `## Reference Knowledge Base\n\n${knowledgeText}`,
+      cache_control: { type: "ephemeral" },
+    },
+  ];
 
-  contentBlocks.push({ type: "text", text: userMessage });
+  if (history.length === 0) {
+    // Single-turn: same behavior as before
+    let userMessage = "";
+    if (category) userMessage += `Category: ${category}\n\n`;
+    userMessage += `## Question\n\n${question}\n\n## Instructions\n\nAnswer this question using the knowledge base above. Follow the system prompt guidelines. Be concise and practical.`;
+    firstUserContent.push({ type: "text", text: userMessage });
+    messages.push({ role: "user", content: firstUserContent });
+  } else {
+    // Multi-turn: knowledge base in first user message, then replay history, then follow-up
+    let firstUserMsg = "";
+    if (category) firstUserMsg += `Category: ${category}\n\n`;
+    firstUserMsg += `## Question\n\n${history[0].content}\n\n## Instructions\n\nAnswer this question using the knowledge base above. Follow the system prompt guidelines. Be concise and practical.`;
+    firstUserContent.push({ type: "text", text: firstUserMsg });
+    messages.push({ role: "user", content: firstUserContent });
+
+    // Remaining history turns (starting from assistant's first reply)
+    for (let i = 1; i < history.length; i++) {
+      messages.push({ role: history[i].role, content: history[i].content });
+    }
+
+    // New follow-up question
+    messages.push({ role: "user", content: `## Follow-up Question\n\n${question}` });
+  }
 
   return {
     model: process.env.CLAUDE_MODEL || "claude-sonnet-4-6",
     max_tokens: 2048,
-    system: [
-      {
-        type: "text",
-        text: qaSystemPrompt,
-        cache_control: { type: "ephemeral" },
-      },
-    ],
-    messages: [
-      {
-        role: "user",
-        content: contentBlocks,
-      },
-    ],
+    system: systemBlocks,
+    messages,
   };
 }
 
@@ -182,9 +200,9 @@ async function draftReplyStream(emailText, context, onChunk) {
 // ---------------------------------------------------------------------------
 // Streaming generation — Q&A
 // ---------------------------------------------------------------------------
-async function answerStream(question, category, onChunk) {
+async function answerStream(question, category, onChunk, history = []) {
   const client = new Anthropic({ maxRetries: 5 });
-  const params = buildQAParams(question, category);
+  const params = buildQAParams(question, category, history);
   const start = Date.now();
   const stream = client.messages.stream(params);
 
@@ -329,6 +347,134 @@ function logIncident(incident) {
   return { date, title: incident.title };
 }
 
+// ---------------------------------------------------------------------------
+// Browse knowledge base — parse all files into structured index
+// ---------------------------------------------------------------------------
+function getKnowledgeIndex() {
+  const files = fs.readdirSync(knowledgeDir)
+    .filter((f) => f.endsWith(".md"))
+    .sort();
+
+  return files.map((filename) => {
+    const filePath = path.join(knowledgeDir, filename);
+    const raw = fs.readFileSync(filePath, "utf-8");
+    const stat = fs.statSync(filePath);
+
+    const category = filename.replace(".md", "");
+    const titleMatch = raw.match(/^# (.+)$/m);
+    const label = titleMatch ? titleMatch[1].trim() : category;
+
+    const sections = [];
+    const blocks = raw.split(/^## /m).slice(1);
+    for (const block of blocks) {
+      const lines = block.split("\n");
+      const title = lines[0].trim();
+      const content = lines.slice(1).join("\n").trim();
+      sections.push({ title, content });
+    }
+
+    return {
+      category,
+      label,
+      filename,
+      sectionCount: sections.length,
+      lastModified: stat.mtime.toISOString(),
+      sections,
+    };
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Get incidents — parse incidents.md into structured array
+// ---------------------------------------------------------------------------
+function getIncidents() {
+  const incidentsPath = path.join(knowledgeDir, "incidents.md");
+  const raw = fs.readFileSync(incidentsPath, "utf-8");
+
+  const blocks = raw.split(/^---$/m).slice(1);
+  const incidents = [];
+
+  for (const block of blocks) {
+    const trimmed = block.trim();
+    if (!trimmed) continue;
+
+    const titleMatch = trimmed.match(/^## (\d{4}-\d{2}-\d{2})\s*[—–-]\s*(.+)$/m);
+    if (!titleMatch) continue;
+
+    const date = titleMatch[1];
+    const title = titleMatch[2].trim();
+
+    const getField = (key) => {
+      const match = trimmed.match(new RegExp(`^\\s*-\\s*\\*\\*${key}:\\*\\*\\s*(.+)`, "mi"));
+      return match ? match[1].trim() : null;
+    };
+
+    incidents.push({
+      date,
+      title,
+      severity: getField("Severity") || "Unknown",
+      affected: getField("Affected") || "Unknown",
+      description: getField("Issue") || getField("Description") || "",
+      resolution: getField("Resolution") || "Pending",
+      handler: getField("Handled by") || "Unknown",
+    });
+  }
+
+  return incidents.reverse();
+}
+
+// ---------------------------------------------------------------------------
+// Parse help-docs.md into structured data (pages + Scribe guides)
+// ---------------------------------------------------------------------------
+function getHelpDocs() {
+  const filePath = path.join(knowledgeDir, "help-docs.md");
+  const raw = fs.readFileSync(filePath, "utf-8");
+
+  const pages = [];
+  const guides = [];
+
+  // Match entries: - **Title:** URL\n  Covers: description
+  const entryRegex = /^- \*\*(.+?):\*\*\s+(https?:\/\/\S+)\s*\n\s+Covers:\s*(.+)/gm;
+
+  // Split into pages section and guides section
+  const guidesStart = raw.indexOf("## Scribe Guides");
+  const pagesSection = guidesStart > -1 ? raw.slice(0, guidesStart) : raw;
+  const guidesSection = guidesStart > -1 ? raw.slice(guidesStart) : "";
+
+  // Parse pages
+  for (const match of pagesSection.matchAll(entryRegex)) {
+    pages.push({ title: match[1].trim(), url: match[2].trim(), description: match[3].trim() });
+  }
+
+  // Parse guides with category tracking
+  let currentCategory = "General";
+  for (const line of guidesSection.split("\n")) {
+    const catMatch = line.match(/^### (.+)/);
+    if (catMatch) {
+      currentCategory = catMatch[1].trim();
+      continue;
+    }
+  }
+
+  // Re-parse guides section with regex, tracking categories by position
+  const categories = [];
+  const catRegex = /^### (.+)$/gm;
+  let catMatch;
+  while ((catMatch = catRegex.exec(guidesSection)) !== null) {
+    categories.push({ name: catMatch[1].trim(), index: catMatch.index });
+  }
+
+  for (const match of guidesSection.matchAll(entryRegex)) {
+    let category = "General";
+    for (const cat of categories) {
+      if (match.index > cat.index) category = cat.name;
+    }
+    guides.push({ title: match[1].trim(), url: match[2].trim(), description: match[3].trim(), category });
+  }
+
+  return { pages, guides };
+}
+
 module.exports = {
   draftReplyStream,
   answerStream,
@@ -341,4 +487,7 @@ module.exports = {
   extractTriage,
   stripTriageTag,
   KNOWLEDGE_FILES,
+  getKnowledgeIndex,
+  getIncidents,
+  getHelpDocs,
 };

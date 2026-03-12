@@ -108,7 +108,7 @@ This is the most common client question area.
 - Conditional fields: show/hide fields based on what the user selects in other fields
 
 ### Email Notifications
-- Edit a form → Behavior tab → Email Notifications
+- Edit a form → Tasks tab → Email Notifications
 - Turn on "Send email notifications when users submit a form"
 - **Recipients:** Set in the "Send To Email Address" field — comma-separated for multiple addresses. Defaults to the site admin email.
 - **Email content:** Uses Smart Tags like `{all_fields}` to include form data. Can customize to show only specific fields.
@@ -144,14 +144,14 @@ This is the most common client question area.
 
 ### Common Client Questions
 - "How do I add a new field to my form?" → Edit the form in Convert Forms, drag a new field into the form builder
-- "How do I change who gets the notification emails?" → Edit form → Behavior → Email Notifications → change the "Send To" address
+- "How do I change who gets the notification emails?" → Edit form → Tasks → Email Notifications → change the "Send To" address
 - "Where do I see form submissions?" → Components → Convert Forms → Submissions
 - "Can I add a file upload?" → Yes, add a File Upload field in the form builder
 - "The form isn't showing on the page" → Check that the Convert Forms system plugin is enabled, and the form shortcode or module is correctly placed
 
 ### Troubleshooting
 - **Form not displaying:** Check that Convert Forms system plugin is enabled in Extensions → Plugins
-- **Not receiving notification emails:** Check Email Notifications are turned on in the form's Behavior tab, verify recipient address, check spam folders
+- **Not receiving notification emails:** Check Email Notifications are turned on in the form's Tasks tab, verify recipient address, check spam folders
 - **Form fields not saving:** Verify the form exists and is published in Convert Forms admin
 - **CAPTCHA issues:** Check CAPTCHA plugin settings and API keys
 
@@ -266,6 +266,16 @@ This is the most common client question area.
 - **Key settings:** Editor profiles, allowed HTML tags, image upload settings
 - **Note:** Internal editor links should never appear on the public site — if they do, there's a configuration issue
 
+### Key Editor Tools
+- **Bold, Italic, Underline:** Standard formatting — but advise clients not to overuse
+- **Heading dropdown:** Select text → choose heading level (H2-H6). H1 is the article title, don't use elsewhere
+- **Link button:** Select text → click link icon → paste URL. External links must include full `https://`
+- **Image button:** Insert/edit images → browse server to upload or select existing
+- **Source Code view:** Toggle to see/edit raw HTML — useful for precise layout control
+- **Paste as Plain Text:** Strips formatting when pasting from Word/Google Docs — prevents broken layouts
+- **Read More button:** Inserts a break that controls what shows on category/blog listing pages
+- **Media embed:** Paste YouTube/Vimeo URLs to embed videos
+
 ---
 
 ## Payment Forms & Stripe Integration
@@ -319,6 +329,172 @@ This is the most common client question area.
 - Donation management for nonprofits
 - Payment processing integration
 - Used on several nonprofit client sites
+
+---
+
+## Akeeba Backup
+- **What it does:** Full-site backup and restoration — creates a single archive containing all files and database. Used for disaster recovery, server migrations, and staging copies
+- **Where to find it:** Admin → Components → Akeeba Backup
+- **Editions:** Core (free, manual backups, local storage only) and Professional (paid, adds cloud uploads, automated scheduling, integrated restoration, Site Transfer Wizard)
+
+### Creating a Backup
+- First time: run **Components → Akeeba Backup → Configuration Wizard** to auto-optimize settings for the server
+- **Backup Now:** Components → Akeeba Backup → Backup Now → add a description → click Backup Now
+- **Critical:** Do not navigate away, close the tab, or switch tabs during backup — browsers suspend background tabs which kills the backup process
+- Default storage location: `administrator/components/com_akeeba/backup`
+
+### Restoring a Backup
+- **Integrated Restoration (Pro):** Manage Backups → select backup → Restore → choose extraction method → follow ANGIE wizard
+- **Kickstart (Core & Pro):** Upload `kickstart.php` + backup archive to server root via FTP → access `yoursite.com/kickstart.php` → extract → follow ANGIE wizard
+- **ANGIE** is the restoration script embedded in every backup — it walks through database setup, site URL, and admin credentials
+- **Always click Clean Up/Finalize** after restoration to remove the installation directory and temp files
+
+### Post-Restoration Troubleshooting
+- **Can't log into admin:** Edit `configuration.php` → set `$cookie_domain = ''` and `$cookie_path = ''` → clear browser cookies → rename `.htaccess` temporarily
+- **Blank page / Error 500:** In `configuration.php` set `$cache_handler = 'file'`, `$caching = '0'`, `$session_handler = 'database'` → check PHP memory limit (128MB minimum)
+- **CSS/images broken:** Set `$live_site` in `configuration.php` to the correct URL
+- **.htaccess problems:** Remove `AddHandler` directives, `php_value`/`php_flag` statements, fix `RewriteBase` paths
+
+### Common Client/Team Questions
+- "Where are my backups?" → `administrator/components/com_akeeba/backup` on the server, or cloud storage if configured (Pro)
+- "How often should I back up?" → Before any major update. Weekly automated for active sites, monthly for rarely-updated sites
+- "My backup keeps failing" → Make sure the browser tab stays active. Run Configuration Wizard to re-optimize. Check View Log for specific errors
+- "Can I restore to a different server?" → Yes — download archive, upload to new server with Kickstart, run ANGIE, update database/URL details
+
+### Archive Formats
+- **JPA:** Akeeba's native format — use for standard backups
+- **JPS:** Encrypted (AES-256) — use when storing in cloud or shared storage. Password is case-sensitive and irrecoverable
+- **ZIP:** Universal format but less reliable for very large sites
+
+---
+
+## Admin Tools
+- **What it does:** Security hardening, Web Application Firewall (WAF), and server configuration management. Most widely-used Joomla security extension
+- **Where to find it:** Admin → Components → Admin Tools
+- **Editions:** Core (free, limited features) and Professional (paid, full WAF + .htaccess Maker)
+
+### Web Application Firewall (WAF)
+- Runs as a system plugin — intercepts every request before Joomla processes it
+- Blocks: SQL injection, brute-force logins, bad bots, suspicious query strings, known malicious IPs
+- **Security Exceptions Log:** Components → Admin Tools → WAF → Security Exceptions Log — shows exactly what was blocked and why
+- **Auto IP Blocking:** Bans IPs after a threshold of security violations
+- **Safe IP List:** "Never block these IPs" — add your office IP here
+
+### Common Issues Admin Tools Causes
+
+#### Locked Out of Admin (Most Common)
+- **Symptoms:** 403 Forbidden at `/administrator`
+- **Causes:** IP changed (mobile/VPN), auto IP blocking triggered, .htaccess rules incompatible with server
+
+**Recovery methods (in order):**
+1. **Rescue Mode:** Visit `yoursite.com/administrator/index.php?admintools_rescue=your@email.com` — token emailed, valid 15 minutes
+2. **FTP disable WAF:** Rename `plugins/system/admintools/services/provider.php` to `provider-disable.php` → fix settings → rename back
+3. **FTP remove .htaccess:** Delete or rename root `.htaccess`, replace with default from `htaccess.txt`
+
+#### Legitimate Users Getting Blocked
+- Check **Security Exceptions Log** for the user's IP to see which rule triggered
+- Delete their IP from **Auto IP Blocking Administration**
+- Add their IP to **Safe IP List** if they have a static IP
+
+#### .htaccess Breaks the Site
+- **Symptoms:** 500 error or blank page after saving .htaccess settings
+- **Fix:** Via FTP, delete `.htaccess` → rename `.htaccess.admintools` back to `.htaccess`
+- **Prevention:** Enable .htaccess options one at a time and test after each change
+
+#### Super User Creation Blocked
+- "Super User Account Monitoring" or "Disable User Property Editing" may block new admin accounts
+- **Fix:** Temporarily disable these in WAF Configuration → Joomla Hardening before creating/modifying admin accounts
+
+### Best Practices
+- **Avoid the Administrator Secret URL parameter** — causes frequent lockouts. Use MFA instead
+- **Know the FTP recovery process** — renaming `provider.php` is your escape hatch
+- **Check Security Exceptions Log** before assuming a problem is unrelated to Admin Tools
+- **After Joomla updates:** Expect alerts from Critical Files Monitoring — these are normal
+- **When troubleshooting:** Temporarily disable Admin Tools via FTP method to rule it out
+
+---
+
+## Astroid Framework
+- **What it does:** Template framework built on Bootstrap 5 — provides visual drag-and-drop interface for template layouts, headers, mega menus, typography, and colors. Not a page builder — controls the template layer (header, footer, layout grid, module positions)
+- **Where to find it:** System → Site Templates → Styles → [Your Template Style]
+- **Compatibility:** Joomla 4.x, 5.x, 6.x. Requires PHP 8.2+
+- **Maintained by:** Templaza (previously JoomDev)
+
+### Key Settings Sections
+- **Header:** 10 header modes (horizontal, stacked, sidebar, etc.), sticky header, off-canvas menu, logo
+- **Layout:** Drag-and-drop layout builder (sections → rows → columns → module positions/widgets)
+- **Colors:** Light mode and dark mode color schemes
+- **Typography:** Google Fonts, local fonts, system fonts with per-element control
+- **Custom Code:** Custom CSS/JS injection without editing core files
+- **Preset Profiles:** Save/load/export full configuration as JSON — **always export before updates**
+
+### Mega Menu
+- Per menu item: Menus → [Your Menu] → [Menu Item] → Astroid Options tab
+- Enable mega menu, then use drag-and-drop builder for multi-column layouts
+- Can drop Joomla modules directly into mega menu columns
+- Supports icons and badges on menu items
+- **Known limitation:** Mega menus do not work in Sidebar Menu Mode
+
+### CRITICAL: Security Vulnerability (CVE-2026-21628)
+- **Disclosed March 4, 2026** — authentication bypass (CVSS 10.0) affecting all versions before 3.3.11
+- Attackers can upload files and install malicious plugins without admin credentials
+- **Update to 3.3.12 or later** (3.3.11 had regressions)
+- **Check for backdoors:** Look for plugins named "System - BLPayload" in Plugin Manager, and files matching `plg_jcp_*.html` in `/administrator/cache/`
+- Updating alone does NOT remove existing backdoors — full security audit needed if previously vulnerable
+
+### Troubleshooting
+- **Site down after Astroid update (500 error):** Via FTP, rename `/libraries/astroid` to `/libraries/astroid_old` and `/plugins/system/astroid` to `/plugins/system/astroid_old` → access admin → reinstall Astroid from [astroidframe.work/download](https://astroidframe.work/download) → delete `_old` folders
+- **"Class not found" errors:** Ensure "Behaviour - Backward Compatibility" plugin is enabled → reinstall Astroid
+- **Cache clearing hangs:** Clear cache via FTP (delete contents of `/administrator/cache/` and `/cache/`) instead of through admin
+
+### Best Practices
+- **Always back up before updating Astroid** — updates have a history of breaking sites
+- **Export Preset Profile (JSON)** before any update to preserve all template settings
+- **Export Layout configurations** as JSON backups before updates
+- **Know the FTP recovery process** — renaming the astroid folders is your escape hatch
+
+---
+
+## Google Structured Data (by Tassos.gr)
+- **What it does:** Adds schema markup (JSON-LD) to site pages without writing code. Helps search engines understand content, which can trigger rich results (star ratings, FAQ dropdowns, event details, business info cards) in Google
+- **Where to find it:** Admin → Components → Google Structured Data
+- **Documentation:** https://www.tassos.gr/docs/google-structured-data
+- **Editions:** Free (limited schema types) and Pro (89 EUR/year, all 21 schema types + component integrations)
+
+### Supported Schema Types (21)
+Article, Book, Breadcrumbs, Course, Event, Fact Check, FAQ, HowTo, Job Posting, Local Business, Movie, Organization, Person, Product, Recipe, Review, Service, Site Logo, Site Name, Social Profiles, Video. Use **Custom Code** type for anything not in this list.
+
+### Setting Up Structured Data
+1. Components → Google Structured Data → Items → New
+2. Set **Content Type** (e.g., Local Business, FAQ, Article)
+3. Set **Integration** (Joomla Articles, Event Booking, DPCalendar, Menu Manager)
+4. Map properties to data sources (article fields, custom fields, page info, or hardcoded values)
+5. Set **Publishing Rules** — target specific pages or categories (category rules auto-apply to new content)
+6. Test with Google's Rich Results Test: https://search.google.com/test/rich-results
+
+### Common Use Cases for Client Sites
+- **Local Business** on homepage — name, address, phone, hours, map coordinates (most impactful for local businesses)
+- **FAQ schema** on service pages — creates expandable Q&A in search results, increasing SERP visibility
+- **Article schema** on blog posts — use category-based rules to auto-apply to all blog articles
+- **Event schema** — integrates directly with Event Booking and DPCalendar
+- **Organization + Site Name + Site Logo + Social Profiles** — set up once in Site Representation for Knowledge Graph
+
+### Integrations Relevant to Third Sun
+- **Joomla Articles** — native content (most common)
+- **Event Booking** — event schema for event pages. Enable via Configuration → Integrations. Has "Remove Microdata" option to strip Event Booking's own incomplete microdata
+- **DPCalendar** — event schema for calendar pages (Pro required)
+- **Menu Manager** — universal fallback for any page not covered by other integrations
+
+### Important Limitations
+- **Only single/detail views supported** — category pages, blog layouts, and list views do NOT get structured data
+- Rich results are never guaranteed — Google decides whether to show them
+- If using sh404SEF, disable its own structured data option to avoid conflicts
+
+### Troubleshooting
+- **Schema not appearing:** Check system plugin is enabled (Extensions → Plugins → "System - Google Structured Data"), item is published, publishing rules target the right pages, clear cache
+- **Rich Results Test doesn't detect schema:** May be a schema type Google's tool doesn't support (use Schema.org Validator instead), or required properties may be missing
+- **Validated but not showing in Google:** Google may not have crawled yet (4-12 weeks), request re-indexing via Search Console. Images must be 160x90 to 1920x1080, .jpg/.png/.gif format
+- **Schema Cleaner:** Enable in Configuration → Advanced to remove Joomla's default incomplete microdata that causes validation errors
 
 ---
 

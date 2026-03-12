@@ -1,11 +1,12 @@
 # Support Hub — Third Sun Internal Operations Tool
 
 ## What This Is
-Combined support tool for Third Sun Productions with four modes:
+Combined support tool for Third Sun Productions with five tabs:
 1. **Draft Reply** — AI-powered client support email drafting with auto-detection, client directory lookup, and triage routing
-2. **Ask a Question** — Internal Q&A against the knowledge base (hosting, domains, Joomla, troubleshooting, tools, business admin)
-3. **Log Incident** — Record security incidents, outages, and issues (appended to knowledge base for future reference)
-4. **Add Knowledge** — Append new sections to knowledge base files (hosting, tasks, components, etc.)
+2. **Ask a Question** — Multi-turn Q&A against the knowledge base with conversation history (hosting, domains, Joomla, troubleshooting, tools, business admin)
+3. **Log Incident** — Record security incidents, outages, and issues (appended to knowledge base), with recent incident viewer
+4. **Knowledge Base** — Browse/search the full knowledge base, and add new sections via AI-powered formatting
+5. **Quick Reference** — Searchable client directory (153 clients) and help docs/Scribe guide link library with copy-to-clipboard
 
 ## Stack
 Node.js, Express 5, Anthropic SDK (`claude-sonnet-4-6`), vanilla HTML/CSS/JS frontend. HMAC-SHA256 cookie auth. SSE streaming. Markdown knowledge files with Anthropic prompt caching.
@@ -13,14 +14,14 @@ Node.js, Express 5, Anthropic SDK (`claude-sonnet-4-6`), vanilla HTML/CSS/JS fro
 ## Project Structure
 ```
 support-reply/
-├── server.js              # Express server — auth, /draft-reply, /ask (SSE), /incidents, /knowledge, /clients
-├── generate.js            # Knowledge loading, Anthropic streaming (draft + Q&A), incident/knowledge appending
+├── server.js              # Express server — auth, /draft-reply, /ask (SSE), /incidents, /knowledge, /knowledge/browse, /clients, /help-docs
+├── generate.js            # Knowledge loading, Anthropic streaming (draft + multi-turn Q&A), incident/knowledge CRUD, browse index, help docs parser
 ├── system-prompt.md       # Draft reply persona and response guidelines
 ├── qa-system-prompt.md    # Q&A assistant persona and response guidelines
 ├── package.json
 ├── .env
 ├── public/
-│   └── index.html         # Frontend — tabbed UI (Draft Reply | Ask a Question | Log Incident | Add Knowledge)
+│   └── index.html         # Frontend — tabbed UI (Draft Reply | Ask a Question | Log Incident | Knowledge Base | Quick Reference)
 ├── knowledge/             # Markdown knowledge files (loaded at startup, prompt-cached)
 │   ├── admin.md           # Business admin, QuickBooks, insurance, licenses, expenses
 │   ├── clients.md         # Client directory (names, websites, types, Joomla versions)
@@ -34,7 +35,7 @@ support-reply/
 │   ├── joomla-components.md  # All Joomla extensions with detailed docs, Stripe/payment forms
 │   └── tools-accounts.md  # Dashlane, ReCaptcha, SendGrid, Adobe, team tools
 └── tests/
-    └── server.test.js     # 31 tests — auth, routes, Q&A, incidents, knowledge, knowledge format, generate helpers
+    └── server.test.js     # 48 tests — auth, routes, Q&A, incidents, knowledge, browse, format, history, generate helpers, help docs
 ```
 
 ## Running Locally
@@ -50,7 +51,10 @@ npm test                 # Run tests
 - `GET /auth-check` — Check authentication status
 - `GET /clients` — Client directory (parsed from clients.md)
 - `POST /draft-reply` — SSE streaming email draft (requires auth). Body: `{ email, clientName?, siteUrl? }`
-- `POST /ask` — SSE streaming Q&A (requires auth). Body: `{ question, category? }`
+- `POST /ask` — SSE streaming Q&A with multi-turn support (requires auth). Body: `{ question, category?, history? }`
+- `GET /knowledge/browse` — Browse all knowledge files with sections (requires auth)
+- `GET /help-docs` — Help doc pages + Scribe guides as structured JSON (requires auth)
+- `GET /incidents` — List all incidents (requires auth)
 - `POST /incidents` — Log an incident (requires auth). Body: `{ title, severity?, affected?, description, resolution?, handler? }`
 - `POST /knowledge/format` — AI-format raw content for a knowledge file (requires auth, rate limited). Body: `{ category, content }`
 - `POST /knowledge` — Save a formatted knowledge section (requires auth). Body: `{ category, content }`
@@ -60,6 +64,9 @@ npm test                 # Run tests
 - All `.md` files in `knowledge/` are concatenated and sent as a cached system prompt block
 - Draft Reply uses `system-prompt.md` as its persona; Q&A uses `qa-system-prompt.md`
 - Both modes share the same knowledge base (prompt caching saves tokens across requests)
+- Q&A supports multi-turn conversations — history sent with each request, knowledge base cached in first message
+- `GET /knowledge/browse` returns all knowledge files parsed into sections for browsing/searching
+- `GET /incidents` parses incidents.md into structured JSON for viewing
 - `incidents.md` is append-only — new incidents are added via the `/incidents` endpoint
 - Knowledge files are append-only via `/knowledge` — new sections added to any editable file (9 of 12, excluding clients.md and incidents.md)
 - Add Knowledge uses a two-step flow: `/knowledge/format` (Claude AI extracts & formats raw input) → preview → `/knowledge` (save)

@@ -670,6 +670,363 @@
       text-align: left;
     }
 
+    /* ── Knowledge sub-nav ── */
+    .knowledge-subnav {
+      display: flex;
+      gap: 0;
+      margin-bottom: 1.2rem;
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .knowledge-subnav-btn {
+      flex: 1;
+      padding: 0.45rem 0.8rem;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .knowledge-subnav-btn:first-child { border-right: 1px solid var(--glass-border); }
+
+    .knowledge-subnav-btn.active {
+      background: rgba(201, 160, 160, 0.1);
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .knowledge-subview { display: none; }
+    .knowledge-subview.active { display: block; }
+
+    /* ── Knowledge browse ── */
+    .kb-category-group { margin-bottom: 0.6rem; }
+
+    .kb-category-header {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--rose-light);
+      padding: 0.5rem 0.6rem;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      user-select: none;
+    }
+
+    .kb-category-header:hover { border-color: var(--glass-border-focus); background: rgba(0,0,0,0.55); }
+
+    .kb-category-header .section-count {
+      font-weight: 400;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .kb-category-header .kb-chevron {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+      margin-left: 0.5rem;
+    }
+
+    .kb-category-group.expanded .kb-chevron { transform: rotate(90deg); }
+    .kb-category-group.expanded .kb-category-header { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+
+    .kb-category-sections {
+      display: none;
+      padding: 0.4rem 0 0;
+    }
+
+    .kb-category-group.expanded .kb-category-sections { display: block; }
+
+    .kb-section-card {
+      padding: 0.6rem 0.85rem;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      margin-bottom: 0.4rem;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+
+    .kb-section-card:hover { border-color: var(--glass-border-focus); }
+
+    .kb-section-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .kb-section-content {
+      display: none;
+      margin-top: 0.5rem;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: var(--text-dim);
+    }
+
+    .kb-section-card.expanded .kb-section-content { display: block; }
+    .kb-section-card.expanded { border-color: var(--glass-border-focus); }
+
+    /* Reuse qa-answer-content styles inside browse sections */
+    .kb-section-content h1, .kb-section-content h2, .kb-section-content h3 { color: var(--rose-light); margin: 0.8rem 0 0.3rem; font-weight: 600; }
+    .kb-section-content h1 { font-size: 1rem; } .kb-section-content h2 { font-size: 0.9rem; } .kb-section-content h3 { font-size: 0.85rem; }
+    .kb-section-content p { margin: 0.3rem 0; }
+    .kb-section-content ul, .kb-section-content ol { padding-left: 1.3rem; margin: 0.3rem 0; }
+    .kb-section-content li { margin: 0.15rem 0; }
+    .kb-section-content strong { color: var(--text); font-weight: 600; }
+    .kb-section-content code { background: rgba(255,255,255,0.06); padding: 0.15rem 0.35rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+    .kb-section-content a { color: var(--copper); text-decoration: none; }
+    .kb-section-content a:hover { text-decoration: underline; }
+
+    .kb-no-results {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      padding: 1.5rem 0;
+    }
+
+    /* ── Incident list cards ── */
+    .incident-card {
+      padding: 0.6rem 0.85rem;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      margin-bottom: 0.5rem;
+    }
+
+    .incident-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.25rem;
+    }
+
+    .incident-card-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .incident-card-date {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .severity-badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 100px;
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .severity-badge.critical { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(212,123,123,0.2); }
+    .severity-badge.high { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(228,184,124,0.2); }
+    .severity-badge.medium { background: rgba(212,165,116,0.1); color: var(--copper); border: 1px solid rgba(212,165,116,0.2); }
+    .severity-badge.low { background: var(--success-bg); color: var(--success); border: 1px solid rgba(126,196,163,0.2); }
+
+    .incident-card-detail {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-top: 0.2rem;
+    }
+
+    /* ── Q&A conversation thread ── */
+    .qa-thread-container {
+      max-height: 450px;
+      overflow-y: auto;
+      margin-bottom: 0.75rem;
+    }
+
+    .qa-thread-container::-webkit-scrollbar { width: 5px; }
+    .qa-thread-container::-webkit-scrollbar-track { background: transparent; }
+    .qa-thread-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+
+    .qa-turn { margin-bottom: 0.75rem; }
+
+    .qa-turn-question {
+      padding: 0.6rem 0.85rem;
+      background: rgba(201, 160, 160, 0.08);
+      border: 1px solid rgba(201, 160, 160, 0.15);
+      border-radius: 10px;
+      font-size: 0.82rem;
+      color: var(--rose-light);
+      margin-bottom: 0.4rem;
+    }
+
+    .qa-turn-answer {
+      padding: 0.8rem 1rem;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      font-size: 0.85rem;
+      line-height: 1.75;
+      color: var(--text);
+    }
+
+    .qa-turn-answer h1, .qa-turn-answer h2, .qa-turn-answer h3 { color: var(--rose-light); margin: 1rem 0 0.4rem; font-weight: 600; }
+    .qa-turn-answer h1 { font-size: 1.1rem; } .qa-turn-answer h2 { font-size: 0.95rem; } .qa-turn-answer h3 { font-size: 0.88rem; }
+    .qa-turn-answer h1:first-child, .qa-turn-answer h2:first-child, .qa-turn-answer h3:first-child { margin-top: 0; }
+    .qa-turn-answer p { margin: 0.4rem 0; }
+    .qa-turn-answer ul, .qa-turn-answer ol { padding-left: 1.3rem; margin: 0.4rem 0; }
+    .qa-turn-answer li { margin: 0.2rem 0; }
+    .qa-turn-answer strong { color: var(--text); font-weight: 600; }
+    .qa-turn-answer code { background: rgba(255,255,255,0.06); padding: 0.15rem 0.35rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+    .qa-turn-answer a { color: var(--copper); text-decoration: none; }
+    .qa-turn-answer a:hover { text-decoration: underline; }
+
+    .qa-turn-actions {
+      display: flex;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+      justify-content: flex-end;
+    }
+
+    .qa-turn-actions .btn { padding: 0.25rem 0.6rem; font-size: 0.68rem; }
+
+    .qa-turn-limit-warning {
+      text-align: center;
+      color: var(--warning);
+      font-size: 0.75rem;
+      padding: 0.5rem;
+      background: var(--warning-bg);
+      border: 1px solid rgba(228, 184, 124, 0.15);
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+    }
+
+    .kb-shortcut {
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-left: 0.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Quick Reference cards ── */
+    .ref-client-card {
+      padding: 0.6rem 0.85rem;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      margin-bottom: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .ref-client-info { flex: 1; min-width: 0; }
+
+    .ref-client-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .ref-website-link {
+      font-size: 0.75rem;
+      color: var(--copper);
+      text-decoration: none;
+    }
+    .ref-website-link:hover { text-decoration: underline; }
+
+    .ref-badges { display: flex; gap: 0.35rem; flex-shrink: 0; }
+
+    .ref-badge {
+      display: inline-block;
+      padding: 0.12rem 0.45rem;
+      border-radius: 100px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      background: rgba(212,165,116,0.1);
+      color: var(--copper);
+      border: 1px solid rgba(212,165,116,0.2);
+    }
+
+    .ref-badge.type {
+      background: var(--rose-glow);
+      color: var(--rose);
+      border-color: rgba(201,160,160,0.2);
+    }
+
+    .ref-doc-card {
+      padding: 0.6rem 0.85rem;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      margin-bottom: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .ref-doc-info { flex: 1; min-width: 0; }
+
+    a.ref-doc-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--copper);
+      text-decoration: none;
+      display: block;
+    }
+    a.ref-doc-title:hover { text-decoration: underline; }
+
+    .ref-doc-desc {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 0.1rem;
+    }
+
+    .ref-link-btn {
+      padding: 0.25rem 0.6rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      border: 1px solid var(--glass-border);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      font-family: inherit;
+    }
+    .ref-link-btn:hover { border-color: var(--copper); color: var(--copper); }
+    .ref-link-btn.copied { border-color: var(--success); color: var(--success); }
+
+    .ref-category-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin: 1rem 0 0.4rem;
+    }
+    .ref-category-label:first-child { margin-top: 0.3rem; }
+
+    .ref-count {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      padding: 0.5rem 0;
+    }
+
     @media (max-width: 600px) {
       body { padding: 0.75rem; }
       .card { padding: 2rem; }
@@ -716,7 +1073,8 @@
       <button class="tab-btn active" data-tab="draft">Draft Reply</button>
       <button class="tab-btn" data-tab="qa">Ask a Question</button>
       <button class="tab-btn" data-tab="incident">Log Incident</button>
-      <button class="tab-btn" data-tab="knowledge">Add Knowledge</button>
+      <button class="tab-btn" data-tab="knowledge">Knowledge Base</button>
+      <button class="tab-btn" data-tab="reference">Quick Reference</button>
     </div>
 
     <!-- ═══ Draft Reply Tab ═══ -->
@@ -746,6 +1104,7 @@
 
         <button type="submit" class="btn btn-primary" id="draftBtn">
           <span id="draftBtnText">Draft Reply</span>
+          <span class="kb-shortcut">⌘↵</span>
           <span class="spinner" id="draftSpinner"></span>
         </button>
         <div class="error-msg" id="draftError"></div>
@@ -776,8 +1135,23 @@
 
     <!-- ═══ Q&A Tab ═══ -->
     <div class="tab-view" id="qaView">
+      <!-- Conversation thread (hidden until first answer) -->
+      <div id="qaConversationThread" style="display:none;">
+        <div class="response-header" style="margin-bottom: 0.6rem;">
+          <span class="response-label">Conversation</span>
+          <button class="btn btn-ghost" id="qaNewConversationBtn" style="padding: 0.3rem 0.7rem; font-size: 0.7rem;">New Conversation</button>
+        </div>
+        <div id="qaThreadContent" class="qa-thread-container"></div>
+      </div>
+
+      <!-- Streaming answer area (shown during generation) -->
+      <div class="response-area" id="qaStreamingArea">
+        <div class="divider"></div>
+        <div class="qa-answer-content" id="qaStreamingContent"></div>
+      </div>
+
       <form id="qaForm">
-        <div class="field-group">
+        <div class="field-group" id="qaCategoryGroup">
           <label>Category (optional)</label>
           <div class="category-pills" id="categoryPills">
             <button type="button" class="category-pill" data-category="Joomla">Joomla</button>
@@ -796,27 +1170,16 @@
 
         <button type="submit" class="btn btn-primary" id="qaBtn">
           <span id="qaBtnText">Ask</span>
+          <span class="kb-shortcut">⌘↵</span>
           <span class="spinner" id="qaSpinner"></span>
         </button>
         <div class="error-msg" id="qaError"></div>
       </form>
 
-      <div class="response-area" id="qaResponseArea">
-        <div class="divider"></div>
-        <div class="response-header">
-          <span class="response-label">Answer</span>
-        </div>
-        <div class="qa-answer-content" id="qaAnswerContent"></div>
-        <div class="response-actions">
-          <button class="btn btn-copy" id="qaCopyBtn">Copy to Clipboard</button>
-          <button class="btn btn-ghost" id="qaNewQuestionBtn">New Question</button>
-        </div>
-      </div>
-
       <div id="qaHistory" style="display:none;">
         <div class="divider"></div>
         <div class="response-header" style="margin-bottom: 0.5rem;">
-          <span class="response-label">Recent Questions</span>
+          <span class="response-label">Recent Conversations</span>
           <button class="btn btn-ghost" id="clearQaHistoryBtn" style="padding: 0.3rem 0.7rem; font-size: 0.7rem;">Clear</button>
         </div>
         <div id="qaHistoryList"></div>
@@ -863,14 +1226,40 @@
           <input type="text" id="incidentHandler" placeholder="e.g. Troy, Sabriel">
         </div>
 
-        <button type="submit" class="btn btn-primary" id="incidentBtn">Log Incident</button>
+        <button type="submit" class="btn btn-primary" id="incidentBtn">Log Incident <span class="kb-shortcut">⌘↵</span></button>
         <div class="error-msg" id="incidentError"></div>
         <div class="success-msg" id="incidentSuccess"></div>
       </form>
+
+      <!-- Recent incidents list -->
+      <div id="incidentList" style="display:none;">
+        <div class="divider"></div>
+        <div class="response-header" style="margin-bottom: 0.5rem;">
+          <span class="response-label">Recent Incidents</span>
+        </div>
+        <div id="incidentListContent"></div>
+      </div>
     </div>
 
-    <!-- ═══ Add Knowledge Tab ═══ -->
+    <!-- ═══ Knowledge Base Tab ═══ -->
     <div class="tab-view" id="knowledgeView">
+      <!-- Sub-navigation -->
+      <div class="knowledge-subnav">
+        <button class="knowledge-subnav-btn active" data-subview="browse">Browse</button>
+        <button class="knowledge-subnav-btn" data-subview="add">Add New</button>
+      </div>
+
+      <!-- Browse sub-view -->
+      <div class="knowledge-subview active" id="knowledgeBrowseView">
+        <div class="field-group">
+          <input type="text" id="knowledgeSearchInput" placeholder="Search the knowledge base...">
+        </div>
+        <div class="category-pills" id="browseCategoryPills"></div>
+        <div id="knowledgeBrowseResults"></div>
+      </div>
+
+      <!-- Add sub-view -->
+      <div class="knowledge-subview" id="knowledgeAddView">
       <!-- Step 1: Input -->
       <div id="knowledgeInputStep">
         <form id="knowledgeFormatForm">
@@ -897,6 +1286,7 @@
 
           <button type="submit" class="btn btn-primary" id="knowledgeFormatBtn">
             <span id="knowledgeFormatBtnText">Format with AI</span>
+            <span class="kb-shortcut">⌘↵</span>
             <span class="spinner" id="knowledgeFormatSpinner"></span>
           </button>
           <div class="error-msg" id="knowledgeError"></div>
@@ -917,6 +1307,32 @@
         </div>
         <div class="error-msg" id="knowledgeSaveError"></div>
         <div class="success-msg" id="knowledgeSuccess"></div>
+      </div>
+      </div><!-- /knowledgeAddView -->
+    </div>
+
+    <!-- ═══ Quick Reference Tab ═══ -->
+    <div class="tab-view" id="referenceView">
+      <!-- Sub-navigation -->
+      <div class="knowledge-subnav">
+        <button class="knowledge-subnav-btn active" data-refview="clients">Clients</button>
+        <button class="knowledge-subnav-btn" data-refview="helpdocs">Help Docs</button>
+      </div>
+
+      <!-- Clients sub-view -->
+      <div class="knowledge-subview active" id="referenceClientsView">
+        <div class="field-group">
+          <input type="text" id="refClientSearch" placeholder="Search clients by name or website...">
+        </div>
+        <div id="refClientResults"></div>
+      </div>
+
+      <!-- Help Docs sub-view -->
+      <div class="knowledge-subview" id="referenceHelpdocsView">
+        <div class="field-group">
+          <input type="text" id="refDocsSearch" placeholder="Search help docs and guides...">
+        </div>
+        <div id="refDocsResults"></div>
       </div>
     </div>
   </div>
@@ -961,10 +1377,12 @@
   const qaSpinner = document.getElementById("qaSpinner");
   const qaError = document.getElementById("qaError");
   const qaQuestion = document.getElementById("qaQuestion");
-  const qaResponseArea = document.getElementById("qaResponseArea");
-  const qaAnswerContent = document.getElementById("qaAnswerContent");
-  const qaCopyBtn = document.getElementById("qaCopyBtn");
-  const qaNewQuestionBtn = document.getElementById("qaNewQuestionBtn");
+  const qaConversationThread = document.getElementById("qaConversationThread");
+  const qaThreadContent = document.getElementById("qaThreadContent");
+  const qaNewConversationBtn = document.getElementById("qaNewConversationBtn");
+  const qaStreamingArea = document.getElementById("qaStreamingArea");
+  const qaStreamingContent = document.getElementById("qaStreamingContent");
+  const qaCategoryGroup = document.getElementById("qaCategoryGroup");
   const qaHistory = document.getElementById("qaHistory");
   const qaHistoryList = document.getElementById("qaHistoryList");
   const clearQaHistoryBtn = document.getElementById("clearQaHistoryBtn");
@@ -975,6 +1393,13 @@
   const incidentBtn = document.getElementById("incidentBtn");
   const incidentError = document.getElementById("incidentError");
   const incidentSuccess = document.getElementById("incidentSuccess");
+  const incidentList = document.getElementById("incidentList");
+  const incidentListContent = document.getElementById("incidentListContent");
+
+  // Knowledge browse refs
+  const knowledgeSearchInput = document.getElementById("knowledgeSearchInput");
+  const browseCategoryPills = document.getElementById("browseCategoryPills");
+  const knowledgeBrowseResults = document.getElementById("knowledgeBrowseResults");
 
   // Knowledge refs
   const knowledgeFormatForm = document.getElementById("knowledgeFormatForm");
@@ -1006,6 +1431,10 @@
       document.querySelectorAll(".tab-view").forEach(v => v.classList.remove("active"));
       btn.classList.add("active");
       document.getElementById(btn.dataset.tab + "View").classList.add("active");
+      // Lazy-load data when tabs are opened
+      if (btn.dataset.tab === "knowledge" && !knowledgeIndex) loadKnowledgeIndex();
+      if (btn.dataset.tab === "incident") loadIncidents();
+      if (btn.dataset.tab === "reference") initReferenceTab();
     });
   });
 
@@ -1045,8 +1474,14 @@
     html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     // Inline code
     html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-    // Links
+    // Links (markdown style first, then auto-link remaining bare URLs)
     html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    html = html.replace(/((?:^|[^"=]))(https?:\/\/[^\s<)]+)/gm, (match, prefix, url) => {
+      if (prefix.endsWith('"') || prefix.endsWith('=')) return match;
+      // Show clean label: strip protocol, www, trailing slash
+      const label = url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
+      return prefix + '<a href="' + url + '" target="_blank" rel="noopener">' + label + '</a>';
+    });
     // Unordered lists
     html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
     html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
@@ -1126,36 +1561,120 @@
   });
 
   // ══════════════════════════════════════════════════════
-  // Q&A — History
+  // Q&A — Multi-turn conversation
   // ══════════════════════════════════════════════════════
-  const QA_HISTORY_KEY = "support-hub-qa";
+  const QA_HISTORY_KEY = "support-hub-qa-v2";
+  const MAX_TURNS = 6;
+  let qaConversationTurns = []; // { role, content } for API
+  let qaConversationDisplay = []; // { question, answer } for display
 
-  function saveQA(entry) {
+  function isInConversation() { return qaConversationTurns.length > 0; }
+
+  function renderConversationThread() {
+    if (qaConversationDisplay.length === 0) {
+      qaConversationThread.style.display = "none";
+      qaCategoryGroup.style.display = "block";
+      qaQuestion.placeholder = "e.g. How do I add a custom field to an Event Booking registration form?";
+      return;
+    }
+
+    qaConversationThread.style.display = "block";
+    qaCategoryGroup.style.display = "none";
+    qaQuestion.placeholder = "Ask a follow-up question...";
+
+    let html = "";
+    for (const turn of qaConversationDisplay) {
+      html += `<div class="qa-turn">`;
+      html += `<div class="qa-turn-question">${escapeHtml(turn.question)}</div>`;
+      html += `<div class="qa-turn-answer">${renderMarkdown(turn.answer)}</div>`;
+      html += `<div class="qa-turn-actions"><button class="btn btn-ghost qa-copy-answer-btn">Copy</button></div>`;
+      html += `</div>`;
+    }
+
+    if (qaConversationDisplay.length >= MAX_TURNS) {
+      html += `<div class="qa-turn-limit-warning">This conversation is getting long. Consider starting a new one to keep answers accurate.</div>`;
+    }
+
+    qaThreadContent.innerHTML = html;
+    qaThreadContent.scrollTop = qaThreadContent.scrollHeight;
+  }
+
+  // Per-turn copy buttons
+  qaThreadContent.addEventListener("click", async (e) => {
+    const btn = e.target.closest(".qa-copy-answer-btn");
+    if (!btn) return;
+    const turnEl = btn.closest(".qa-turn");
+    const turns = qaThreadContent.querySelectorAll(".qa-turn");
+    const idx = Array.from(turns).indexOf(turnEl);
+    if (idx < 0 || !qaConversationDisplay[idx]) return;
+    const answer = qaConversationDisplay[idx].answer;
+    try { await navigator.clipboard.writeText(answer); }
+    catch {
+      const ta = document.createElement("textarea");
+      ta.value = answer;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    btn.textContent = "Copied!";
+    setTimeout(() => { btn.textContent = "Copy"; }, 1500);
+  });
+
+  qaNewConversationBtn.addEventListener("click", () => {
+    if (qaConversationDisplay.length > 0) saveQAConversation();
+    resetQAConversation();
+  });
+
+  function resetQAConversation() {
+    qaConversationTurns = [];
+    qaConversationDisplay = [];
+    qaConversationThread.style.display = "none";
+    qaStreamingArea.style.display = "none";
+    qaError.style.display = "none";
+    qaQuestion.value = "";
+    qaAccumulator = "";
+    qaCategoryGroup.style.display = "block";
+    qaQuestion.placeholder = "e.g. How do I add a custom field to an Event Booking registration form?";
+    categoryPills.querySelectorAll(".category-pill").forEach(p => p.classList.remove("active"));
+    selectedCategory = null;
+    qaBtnText.textContent = "Ask";
+    qaQuestion.focus();
+    renderQaHistory();
+  }
+
+  function saveQAConversation() {
+    if (qaConversationDisplay.length === 0) return;
     try {
       const h = JSON.parse(localStorage.getItem(QA_HISTORY_KEY) || "[]");
-      h.unshift(entry);
+      h.unshift({
+        title: qaConversationDisplay[0].question.slice(0, 60) + (qaConversationDisplay[0].question.length > 60 ? "..." : ""),
+        category: selectedCategory || null,
+        turns: qaConversationDisplay,
+        turnCount: qaConversationDisplay.length,
+        timestamp: Date.now(),
+      });
       if (h.length > MAX_HISTORY) h.length = MAX_HISTORY;
       localStorage.setItem(QA_HISTORY_KEY, JSON.stringify(h));
     } catch {}
   }
 
-  function loadQAs() {
+  function loadQAConversations() {
     try { return JSON.parse(localStorage.getItem(QA_HISTORY_KEY) || "[]"); }
     catch { return []; }
   }
 
   function renderQaHistory() {
-    const items = loadQAs();
+    const items = loadQAConversations();
     if (!items.length) { qaHistory.style.display = "none"; return; }
     qaHistory.style.display = "block";
     qaHistoryList.innerHTML = items.map((d, i) => {
-      const preview = d.question.slice(0, 80) + (d.question.length > 80 ? "..." : "");
       return `<div class="history-item" data-index="${i}">
         <div class="history-meta">
-          <span>${d.category ? escapeHtml(d.category) : "General"}</span>
+          <span>${d.category ? escapeHtml(d.category) : "General"} &middot; ${d.turnCount} turn${d.turnCount !== 1 ? "s" : ""}</span>
           <span>${formatTime(d.timestamp)}</span>
         </div>
-        <div class="history-preview">${escapeHtml(preview)}</div>
+        <div class="history-preview">${escapeHtml(d.title)}</div>
       </div>`;
     }).join("");
   }
@@ -1163,17 +1682,21 @@
   qaHistoryList.addEventListener("click", (e) => {
     const item = e.target.closest(".history-item");
     if (!item) return;
-    const items = loadQAs();
+    const items = loadQAConversations();
     const entry = items[parseInt(item.dataset.index, 10)];
-    if (!entry) return;
+    if (!entry || !entry.turns) return;
 
-    qaAccumulator = entry.answer;
-    qaAnswerContent.innerHTML = renderMarkdown(entry.answer);
-    qaResponseArea.style.display = "block";
-    qaResponseArea.classList.remove("streaming");
-    qaCopyBtn.textContent = "Copy to Clipboard";
-    qaCopyBtn.classList.remove("copied");
-    qaResponseArea.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    qaConversationDisplay = [...entry.turns];
+    qaConversationTurns = [];
+    for (const turn of entry.turns) {
+      qaConversationTurns.push({ role: "user", content: turn.question });
+      qaConversationTurns.push({ role: "assistant", content: turn.answer });
+    }
+    selectedCategory = entry.category;
+    renderConversationThread();
+    qaStreamingArea.style.display = "none";
+    qaQuestion.value = "";
+    qaBtnText.textContent = "Ask Follow-up";
   });
 
   clearQaHistoryBtn.addEventListener("click", () => {
@@ -1274,6 +1797,28 @@
   clientNameEl.addEventListener("input", () => { clientNameEl.dataset.userEdited = "true"; nameAutoTag.classList.add("hidden"); });
   siteUrlEl.addEventListener("input", () => { siteUrlEl.dataset.userEdited = "true"; urlAutoTag.classList.add("hidden"); lookupClient(siteUrlEl.value); });
   siteUrlEl.addEventListener("change", () => lookupClient(siteUrlEl.value));
+
+  // ══════════════════════════════════════════════════════
+  // Ctrl/Cmd+Enter to submit forms from textareas
+  // ══════════════════════════════════════════════════════
+  for (const [textareaId, formId] of [
+    ["emailText", "draftForm"],
+    ["qaQuestion", "qaForm"],
+    ["incidentDescription", "incidentForm"],
+    ["incidentResolution", "incidentForm"],
+    ["knowledgeContent", "knowledgeFormatForm"],
+  ]) {
+    const ta = document.getElementById(textareaId);
+    const form = document.getElementById(formId);
+    if (ta && form) {
+      ta.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          form.requestSubmit();
+        }
+      });
+    }
+  }
 
   // ══════════════════════════════════════════════════════
   // Auth
@@ -1427,7 +1972,7 @@
   });
 
   // ══════════════════════════════════════════════════════
-  // Q&A — submit
+  // Q&A — submit (multi-turn)
   // ══════════════════════════════════════════════════════
   qaForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -1435,12 +1980,10 @@
     if (!question) return;
 
     qaError.style.display = "none";
-    qaResponseArea.style.display = "none";
-    qaResponseArea.classList.remove("streaming");
-    qaAnswerContent.innerHTML = "";
+    qaStreamingArea.style.display = "none";
+    qaStreamingArea.classList.remove("streaming");
+    qaStreamingContent.innerHTML = "";
     qaAccumulator = "";
-    qaCopyBtn.textContent = "Copy to Clipboard";
-    qaCopyBtn.classList.remove("copied");
 
     qaBtn.disabled = true;
     qaBtnText.textContent = "Thinking...";
@@ -1456,42 +1999,50 @@
         body: JSON.stringify({
           question,
           category: selectedCategory || undefined,
+          history: qaConversationTurns.length > 0 ? qaConversationTurns : undefined,
         }),
         signal: currentAbortController.signal,
       });
 
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Request failed"); }
 
-      qaResponseArea.style.display = "block";
-      qaResponseArea.classList.add("streaming");
+      qaStreamingArea.style.display = "block";
+      qaStreamingArea.classList.add("streaming");
 
       await readSSEStream(res,
         (text) => {
           qaAccumulator += text;
-          qaAnswerContent.innerHTML = renderMarkdown(qaAccumulator);
-          qaAnswerContent.scrollTop = qaAnswerContent.scrollHeight;
+          qaStreamingContent.innerHTML = renderMarkdown(qaAccumulator);
+          qaStreamingContent.scrollTop = qaStreamingContent.scrollHeight;
         },
         () => {
-          qaResponseArea.classList.remove("streaming");
-          qaAnswerContent.innerHTML = renderMarkdown(qaAccumulator);
-          saveQA({
-            question,
-            category: selectedCategory || null,
-            answer: qaAccumulator,
-            timestamp: Date.now(),
-          });
-          renderQaHistory();
+          qaStreamingArea.classList.remove("streaming");
+
+          // Add to conversation
+          qaConversationTurns.push({ role: "user", content: question });
+          qaConversationTurns.push({ role: "assistant", content: qaAccumulator });
+          qaConversationDisplay.push({ question, answer: qaAccumulator });
+
+          // Update thread display
+          renderConversationThread();
+
+          // Hide streaming area (content is now in the thread)
+          qaStreamingArea.style.display = "none";
+
+          // Clear the input for follow-up
+          qaQuestion.value = "";
+          qaQuestion.focus();
         },
         (err) => { throw err; }
       );
     } catch (err) {
-      qaResponseArea.classList.remove("streaming");
+      qaStreamingArea.classList.remove("streaming");
       if (err.name === "AbortError") return;
       qaError.textContent = err.message;
       qaError.style.display = "block";
     } finally {
       qaBtn.disabled = false;
-      qaBtnText.textContent = "Ask";
+      qaBtnText.textContent = isInConversation() ? "Ask Follow-up" : "Ask";
       qaSpinner.style.display = "none";
     }
   });
@@ -1525,6 +2076,7 @@
       incidentSuccess.textContent = `Incident "${data.title}" logged for ${data.date}. It's now part of the knowledge base.`;
       incidentSuccess.style.display = "block";
       incidentForm.reset();
+      loadIncidents();
     } catch (err) {
       incidentError.textContent = err.message;
       incidentError.style.display = "block";
@@ -1647,6 +2199,7 @@
         knowledgeSaveBtn.textContent = "Save to Knowledge Base";
         knowledgeSuccess.style.display = "none";
         knowledgeFormatForm.reset();
+        knowledgeIndex = null; // invalidate browse cache
       }, 3000);
     } catch (err) {
       knowledgeSaveError.textContent = err.message;
@@ -1694,32 +2247,276 @@
     emailTextEl.focus();
   });
 
-  qaCopyBtn.addEventListener("click", async () => {
-    try { await navigator.clipboard.writeText(qaAccumulator); }
+  // ══════════════════════════════════════════════════════
+  // Incidents — Recent list
+  // ══════════════════════════════════════════════════════
+  async function loadIncidents() {
+    try {
+      const res = await fetch("/incidents");
+      if (!res.ok) return;
+      const incidents = await res.json();
+      if (!incidents.length) { incidentList.style.display = "none"; return; }
+
+      incidentList.style.display = "block";
+      incidentListContent.innerHTML = incidents.map(inc => {
+        const severityClass = (inc.severity || "").toLowerCase();
+        return `<div class="incident-card">
+          <div class="incident-card-header">
+            <span class="incident-card-title">${escapeHtml(inc.title)}</span>
+            <span class="severity-badge ${severityClass}">${escapeHtml(inc.severity)}</span>
+          </div>
+          <div class="incident-card-date">${escapeHtml(inc.date)} &middot; ${escapeHtml(inc.affected)} &middot; ${escapeHtml(inc.handler)}</div>
+          <div class="incident-card-detail">${escapeHtml(inc.description)}</div>
+        </div>`;
+      }).join("");
+    } catch { /* silent fail */ }
+  }
+
+  // ══════════════════════════════════════════════════════
+  // Knowledge Base — Browse
+  // ══════════════════════════════════════════════════════
+  let knowledgeIndex = null;
+  let browseSelectedCategory = null;
+
+  // Sub-navigation switching (scoped to Knowledge Base tab only)
+  document.querySelectorAll("[data-subview]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const nav = btn.closest(".knowledge-subnav");
+      nav.querySelectorAll(".knowledge-subnav-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("knowledgeBrowseView").classList.toggle("active", btn.dataset.subview === "browse");
+      document.getElementById("knowledgeAddView").classList.toggle("active", btn.dataset.subview === "add");
+      if (btn.dataset.subview === "browse" && !knowledgeIndex) loadKnowledgeIndex();
+    });
+  });
+
+  async function loadKnowledgeIndex() {
+    try {
+      const res = await fetch("/knowledge/browse");
+      if (!res.ok) throw new Error("Failed to load");
+      knowledgeIndex = await res.json();
+
+      // Build category pills
+      browseCategoryPills.innerHTML = knowledgeIndex.map(cat =>
+        `<button type="button" class="category-pill" data-browse-category="${cat.category}">${escapeHtml(cat.label)}</button>`
+      ).join("");
+
+      renderKnowledgeBrowse();
+    } catch {
+      knowledgeBrowseResults.innerHTML = '<div class="kb-no-results">Failed to load knowledge base. Please try again.</div>';
+    }
+  }
+
+  browseCategoryPills.addEventListener("click", (e) => {
+    const pill = e.target.closest(".category-pill");
+    if (!pill) return;
+    if (pill.classList.contains("active")) {
+      pill.classList.remove("active");
+      browseSelectedCategory = null;
+    } else {
+      browseCategoryPills.querySelectorAll(".category-pill").forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      browseSelectedCategory = pill.dataset.browseCategory;
+    }
+    renderKnowledgeBrowse();
+  });
+
+  knowledgeSearchInput.addEventListener("input", () => renderKnowledgeBrowse());
+
+  function renderKnowledgeBrowse() {
+    if (!knowledgeIndex) return;
+
+    const query = (knowledgeSearchInput.value || "").toLowerCase().trim();
+    let hasResults = false;
+    let html = "";
+
+    for (const cat of knowledgeIndex) {
+      if (browseSelectedCategory && cat.category !== browseSelectedCategory) continue;
+
+      const matchingSections = cat.sections.filter(s => {
+        if (!query) return true;
+        return s.title.toLowerCase().includes(query) || s.content.toLowerCase().includes(query);
+      });
+
+      if (matchingSections.length === 0) continue;
+      hasResults = true;
+
+      const isExpanded = query ? " expanded" : "";
+      html += `<div class="kb-category-group${isExpanded}">`;
+      html += `<div class="kb-category-header" onclick="this.parentElement.classList.toggle('expanded')">`;
+      html += `<span>${escapeHtml(cat.label)}</span>`;
+      html += `<span><span class="section-count">${matchingSections.length} section${matchingSections.length !== 1 ? "s" : ""}</span><span class="kb-chevron">&#9654;</span></span>`;
+      html += `</div>`;
+      html += `<div class="kb-category-sections">`;
+
+      for (const section of matchingSections) {
+        html += `<div class="kb-section-card" onclick="this.classList.toggle('expanded')">`;
+        html += `<div class="kb-section-title">${escapeHtml(section.title)}</div>`;
+        html += `<div class="kb-section-content">${renderMarkdown(section.content)}</div>`;
+        html += `</div>`;
+      }
+
+      html += `</div></div>`;
+    }
+
+    if (!hasResults) {
+      html = `<div class="kb-no-results">${query ? 'No results for "' + escapeHtml(query) + '"' : "No knowledge entries found."}</div>`;
+    }
+
+    knowledgeBrowseResults.innerHTML = html;
+  }
+
+  // ══════════════════════════════════════════════════════
+  // Quick Reference — Clients & Help Docs
+  // ══════════════════════════════════════════════════════
+  let helpDocsData = null;
+  let referenceInited = false;
+
+  // Sub-navigation switching for reference tab
+  document.querySelectorAll("[data-refview]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("[data-refview]").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("referenceClientsView").classList.toggle("active", btn.dataset.refview === "clients");
+      document.getElementById("referenceHelpdocsView").classList.toggle("active", btn.dataset.refview === "helpdocs");
+      if (btn.dataset.refview === "helpdocs" && !helpDocsData) loadHelpDocs();
+    });
+  });
+
+  function initReferenceTab() {
+    if (referenceInited) return;
+    referenceInited = true;
+    renderClientDirectory();
+  }
+
+  // ── Clients ──
+  const refClientSearch = document.getElementById("refClientSearch");
+  const refClientResults = document.getElementById("refClientResults");
+
+  refClientSearch.addEventListener("input", () => renderClientDirectory());
+
+  function renderClientDirectory() {
+    if (!clientDirectory.length) {
+      refClientResults.innerHTML = '<div class="kb-no-results">Loading clients...</div>';
+      return;
+    }
+
+    const query = (refClientSearch.value || "").toLowerCase().trim();
+    const filtered = clientDirectory.filter(c => {
+      if (!query) return true;
+      return c.name.toLowerCase().includes(query)
+        || c.website.toLowerCase().includes(query)
+        || (c.type || "").toLowerCase().includes(query)
+        || (c.joomla || "").toLowerCase().includes(query);
+    });
+
+    if (!filtered.length) {
+      refClientResults.innerHTML = `<div class="kb-no-results">No clients match "${escapeHtml(query)}"</div>`;
+      return;
+    }
+
+    let html = `<div class="ref-count">${filtered.length} client${filtered.length !== 1 ? "s" : ""}</div>`;
+    for (const c of filtered) {
+      const jBadge = c.joomla ? `<span class="ref-badge">Joomla ${escapeHtml(c.joomla)}</span>` : "";
+      const tBadge = c.type ? `<span class="ref-badge type">${escapeHtml(c.type)}</span>` : "";
+      html += `<div class="ref-client-card">
+        <div class="ref-client-info">
+          <div class="ref-client-name">${escapeHtml(c.name)}</div>
+          <a class="ref-website-link" href="https://${escapeHtml(c.website)}" target="_blank" rel="noopener">${escapeHtml(c.website)}</a>
+        </div>
+        <div class="ref-badges">${tBadge}${jBadge}</div>
+      </div>`;
+    }
+    refClientResults.innerHTML = html;
+  }
+
+  // ── Help Docs ──
+  const refDocsSearch = document.getElementById("refDocsSearch");
+  const refDocsResults = document.getElementById("refDocsResults");
+
+  refDocsSearch.addEventListener("input", () => renderHelpDocs());
+
+  async function loadHelpDocs() {
+    try {
+      const res = await fetch("/help-docs");
+      if (!res.ok) throw new Error("Failed to load");
+      helpDocsData = await res.json();
+      renderHelpDocs();
+    } catch {
+      refDocsResults.innerHTML = '<div class="kb-no-results">Failed to load help docs. Please try again.</div>';
+    }
+  }
+
+  function renderHelpDocs() {
+    if (!helpDocsData) return;
+
+    const query = (refDocsSearch.value || "").toLowerCase().trim();
+    let html = "";
+
+    // Help doc pages
+    const filteredPages = helpDocsData.pages.filter(p => {
+      if (!query) return true;
+      return p.title.toLowerCase().includes(query) || p.description.toLowerCase().includes(query);
+    });
+
+    if (filteredPages.length > 0) {
+      html += `<div class="ref-category-label">Help Doc Pages</div>`;
+      for (const p of filteredPages) {
+        html += renderDocCard(p);
+      }
+    }
+
+    // Scribe guides grouped by category
+    const filteredGuides = helpDocsData.guides.filter(g => {
+      if (!query) return true;
+      return g.title.toLowerCase().includes(query) || g.description.toLowerCase().includes(query) || g.category.toLowerCase().includes(query);
+    });
+
+    if (filteredGuides.length > 0) {
+      const byCategory = {};
+      for (const g of filteredGuides) {
+        if (!byCategory[g.category]) byCategory[g.category] = [];
+        byCategory[g.category].push(g);
+      }
+      for (const [cat, guides] of Object.entries(byCategory)) {
+        html += `<div class="ref-category-label">${escapeHtml(cat)}</div>`;
+        for (const g of guides) {
+          html += renderDocCard(g);
+        }
+      }
+    }
+
+    if (!filteredPages.length && !filteredGuides.length) {
+      html = `<div class="kb-no-results">${query ? 'No docs match "' + escapeHtml(query) + '"' : "No help docs found."}</div>`;
+    }
+
+    refDocsResults.innerHTML = html;
+  }
+
+  function renderDocCard(doc) {
+    return `<div class="ref-doc-card">
+      <div class="ref-doc-info">
+        <a class="ref-doc-title" href="${escapeHtml(doc.url)}" target="_blank" rel="noopener">${escapeHtml(doc.title)}</a>
+        <div class="ref-doc-desc">${escapeHtml(doc.description)}</div>
+      </div>
+      <button class="ref-link-btn" onclick="copyDocLink(this, '${escapeHtml(doc.url)}')">Copy Link</button>
+    </div>`;
+  }
+
+  function copyDocLink(btn, url) {
+    try { navigator.clipboard.writeText(url); }
     catch {
       const ta = document.createElement("textarea");
-      ta.value = qaAccumulator;
+      ta.value = url;
       document.body.appendChild(ta);
       ta.select();
       document.execCommand("copy");
       document.body.removeChild(ta);
     }
-    qaCopyBtn.textContent = "Copied!";
-    qaCopyBtn.classList.add("copied");
-    setTimeout(() => { qaCopyBtn.textContent = "Copy to Clipboard"; qaCopyBtn.classList.remove("copied"); }, 2000);
-  });
-
-  qaNewQuestionBtn.addEventListener("click", () => {
-    qaResponseArea.style.display = "none";
-    qaResponseArea.classList.remove("streaming");
-    qaError.style.display = "none";
-    qaQuestion.value = "";
-    qaAccumulator = "";
-    qaAnswerContent.innerHTML = "";
-    categoryPills.querySelectorAll(".category-pill").forEach(p => p.classList.remove("active"));
-    selectedCategory = null;
-    qaQuestion.focus();
-  });
+    btn.textContent = "Copied!";
+    btn.classList.add("copied");
+    setTimeout(() => { btn.textContent = "Copy Link"; btn.classList.remove("copied"); }, 1500);
+  }
 </script>
 </body>
 </html>

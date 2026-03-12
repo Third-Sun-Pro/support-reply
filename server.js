@@ -5,7 +5,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const fs = require("fs");
-const { draftReplyStream, answerStream, logIncident, addKnowledge, formatKnowledge } = require("./generate");
+const { draftReplyStream, answerStream, logIncident, addKnowledge, formatKnowledge, getKnowledgeIndex, getIncidents, getHelpDocs } = require("./generate");
 
 // ---------------------------------------------------------------------------
 // Structured logger
@@ -166,6 +166,32 @@ app.get("/clients", requireAuth, (_req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// Browse knowledge base
+// ---------------------------------------------------------------------------
+app.get("/knowledge/browse", requireAuth, (_req, res) => {
+  try {
+    const index = getKnowledgeIndex();
+    res.json(index);
+  } catch (err) {
+    log("error", "Knowledge browse failed", { error: err.message });
+    res.status(500).json({ error: "Failed to load knowledge base." });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Help docs — parsed from help-docs.md
+// ---------------------------------------------------------------------------
+app.get("/help-docs", requireAuth, (_req, res) => {
+  try {
+    const docs = getHelpDocs();
+    res.json(docs);
+  } catch (err) {
+    log("error", "Help docs failed", { error: err.message });
+    res.status(500).json({ error: "Failed to load help docs." });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Draft reply — streaming endpoint
 // ---------------------------------------------------------------------------
 app.post("/draft-reply", requireAuth, apiLimiter, async (req, res) => {
@@ -226,10 +252,21 @@ app.post("/draft-reply", requireAuth, apiLimiter, async (req, res) => {
 // Ask a question — streaming Q&A endpoint
 // ---------------------------------------------------------------------------
 app.post("/ask", requireAuth, apiLimiter, async (req, res) => {
-  const { question, category } = req.body;
+  const { question, category, history } = req.body;
 
   if (!question || !question.trim()) {
     return res.status(400).json({ error: "Question is required." });
+  }
+
+  // Validate history if provided
+  const safeHistory = [];
+  if (Array.isArray(history)) {
+    for (const turn of history) {
+      if (turn && typeof turn.role === "string" && typeof turn.content === "string"
+          && (turn.role === "user" || turn.role === "assistant")) {
+        safeHistory.push({ role: turn.role, content: turn.content });
+      }
+    }
   }
 
   res.setHeader("Content-Type", "text/event-stream");
@@ -253,14 +290,15 @@ app.post("/ask", requireAuth, apiLimiter, async (req, res) => {
   });
 
   try {
-    log("info", "Answering question", { reqId: req.id, category: category || null });
+    log("info", "Answering question", { reqId: req.id, category: category || null, historyTurns: safeHistory.length });
 
     const { usage } = await answerStream(
       question.trim(),
       category?.trim() || null,
       (delta) => {
         if (!finished) res.write(`data: ${JSON.stringify({ text: delta })}\n\n`);
-      }
+      },
+      safeHistory,
     );
 
     if (!finished) {
@@ -276,6 +314,19 @@ app.post("/ask", requireAuth, apiLimiter, async (req, res) => {
     finished = true;
     clearTimeout(timeout);
     if (!res.writableEnded) res.end();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// View incidents
+// ---------------------------------------------------------------------------
+app.get("/incidents", requireAuth, (_req, res) => {
+  try {
+    const incidents = getIncidents();
+    res.json(incidents);
+  } catch (err) {
+    log("error", "Get incidents failed", { error: err.message });
+    res.status(500).json({ error: "Failed to load incidents." });
   }
 });
 
