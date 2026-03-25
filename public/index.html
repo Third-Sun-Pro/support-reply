@@ -1878,9 +1878,17 @@
     showLogin();
   });
 
+  // Hub integration — read URL params from Client Hub
+  const hubParams = new URLSearchParams(window.location.search);
+  const hubClientName = hubParams.get("clientName");
+
   function showApp() {
     loginCard.classList.add("hidden");
     appContainer.classList.remove("hidden");
+    if (hubClientName) {
+      clientNameEl.value = hubClientName;
+      clientNameEl.dataset.userEdited = "true";
+    }
     emailTextEl.focus();
     loadClientDirectory();
     renderDraftHistory();
