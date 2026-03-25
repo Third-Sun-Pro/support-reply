@@ -11,11 +11,15 @@ const qaSystemPrompt = fs.readFileSync(path.join(__dirname, "qa-system-prompt.md
 
 const knowledgeDir = path.join(__dirname, "knowledge");
 
-let knowledgeText = loadKnowledgeText();
+// Files excluded from draft-reply context (internal-only, not useful for client emails)
+const DRAFT_EXCLUDE = new Set(["admin.md", "tools-accounts.md"]);
 
-function loadKnowledgeText() {
+let knowledgeText = loadKnowledgeText();
+let draftKnowledgeText = loadKnowledgeText(DRAFT_EXCLUDE);
+
+function loadKnowledgeText(exclude = new Set()) {
   const files = fs.readdirSync(knowledgeDir)
-    .filter((f) => f.endsWith(".md"))
+    .filter((f) => f.endsWith(".md") && !exclude.has(f))
     .sort();
   return files
     .map((f) => fs.readFileSync(path.join(knowledgeDir, f), "utf-8"))
@@ -27,6 +31,7 @@ function loadKnowledgeText() {
 // ---------------------------------------------------------------------------
 function reloadKnowledge() {
   knowledgeText = loadKnowledgeText();
+  draftKnowledgeText = loadKnowledgeText(DRAFT_EXCLUDE);
 }
 
 // ---------------------------------------------------------------------------
@@ -38,7 +43,7 @@ function buildDraftParams(emailText, context = {}) {
   // Knowledge base (cached — reused across requests)
   contentBlocks.push({
     type: "text",
-    text: `## Reference Knowledge Base\n\n${knowledgeText}`,
+    text: `## Reference Knowledge Base\n\n${draftKnowledgeText}`,
     cache_control: { type: "ephemeral" },
   });
 
@@ -433,30 +438,24 @@ function getHelpDocs() {
   const pages = [];
   const guides = [];
 
-  // Match entries: - **Title:** URL\n  Covers: description
-  const entryRegex = /^- \*\*(.+?):\*\*\s+(https?:\/\/\S+)\s*\n\s+Covers:\s*(.+)/gm;
-
   // Split into pages section and guides section
   const guidesStart = raw.indexOf("## Scribe Guides");
   const pagesSection = guidesStart > -1 ? raw.slice(0, guidesStart) : raw;
   const guidesSection = guidesStart > -1 ? raw.slice(guidesStart) : "";
 
-  // Parse pages
-  for (const match of pagesSection.matchAll(entryRegex)) {
-    pages.push({ title: match[1].trim(), url: match[2].trim(), description: match[3].trim() });
+  // Parse pages — supports both formats:
+  // - **Title:** /path  (compact, URL is a path suffix)
+  // - **Title:** https://full-url\n  Covers: description  (legacy)
+  const pageRegex = /^- \*\*(.+?):\*\*\s+(\S+)/gm;
+  for (const match of pagesSection.matchAll(pageRegex)) {
+    let url = match[2].trim();
+    if (url.startsWith("/")) url = "https://thirdsun.com/help-docs" + url;
+    pages.push({ title: match[1].trim(), url, description: match[1].trim() });
   }
 
-  // Parse guides with category tracking
-  let currentCategory = "General";
-  for (const line of guidesSection.split("\n")) {
-    const catMatch = line.match(/^### (.+)/);
-    if (catMatch) {
-      currentCategory = catMatch[1].trim();
-      continue;
-    }
-  }
-
-  // Re-parse guides section with regex, tracking categories by position
+  // Parse guides — supports both formats:
+  // - Title: https://url  (compact)
+  // - **Title:** https://url\n  Covers: description  (legacy)
   const categories = [];
   const catRegex = /^### (.+)$/gm;
   let catMatch;
@@ -464,12 +463,13 @@ function getHelpDocs() {
     categories.push({ name: catMatch[1].trim(), index: catMatch.index });
   }
 
-  for (const match of guidesSection.matchAll(entryRegex)) {
+  const guideRegex = /^- (?:\*\*)?(.+?)(?:\*\*)?:\s+(https?:\/\/\S+)/gm;
+  for (const match of guidesSection.matchAll(guideRegex)) {
     let category = "General";
     for (const cat of categories) {
       if (match.index > cat.index) category = cat.name;
     }
-    guides.push({ title: match[1].trim(), url: match[2].trim(), description: match[3].trim(), category });
+    guides.push({ title: match[1].trim(), url: match[2].trim(), description: match[1].trim(), category });
   }
 
   return { pages, guides };

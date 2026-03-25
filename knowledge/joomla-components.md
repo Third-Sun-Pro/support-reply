@@ -38,9 +38,9 @@ Global settings (Configuration → Billing Fields) only affect **newly created e
 - "How do I change the calendar view?" → Menu item settings control which view displays
 
 ### Troubleshooting
-- **Events not displaying:** Verify event and calendar are both published, check menu item, clear cache
-- **Google Calendar not syncing:** Check API credentials, verify OAuth token, check Google Calendar plugin is enabled
-- **Booking not working:** Ensure booking is enabled in component Options, check payment gateway config
+- **Events not displaying:** Check that the event and calendar are both published. If still not showing, email us and we'll take a look.
+- **Google Calendar not syncing:** This needs Troy — email us and we'll sort it out.
+- **Booking not working:** Email us and we'll check the configuration.
 
 ### Docs: https://joomla.digital-peak.com/documentation/dpcalendar
 
@@ -114,56 +114,10 @@ This is the most important setting. Controls how often returning visitors see th
 
 ---
 
-## Payment Forms & Stripe Integration
+## Payment Forms & Stripe
 - **Stripe** is the primary payment processor for client sites
-- **Two approaches:** Embedded credit card form (on-page, no Apple/Google Pay) or Stripe Hosted Checkout (redirect, supports Apple/Google Pay, better mobile experience)
-- **Recommendation:** Stripe hosted checkout for most cases
-- **Troy handles** all Stripe configuration
-
----
-
----
-
-## Akeeba Backup
-- **What it does:** Full-site backup and restoration
-- **Where to find it:** Admin → Components → Akeeba Backup
-- **Critical:** Do NOT navigate away or switch tabs during backup — browsers kill the process
-- **Troy handles** all backup restoration and server migration
-- **Rule of thumb:** Back up before any major update. Weekly for active sites, monthly for quiet ones.
-
----
-
-## Admin Tools
-- **What it does:** Security hardening and Web Application Firewall (WAF)
-- **Where to find it:** Admin → Components → Admin Tools
-- **Troy handles** all Admin Tools configuration
-
-### Locked Out of Admin (Most Common Issue)
-- **Symptoms:** 403 Forbidden at `/administrator`
-- **Cause:** IP changed, auto-blocking triggered, or .htaccess incompatibility
-- **Recovery:** Rescue Mode → `yoursite.com/administrator/index.php?admintools_rescue=your@email.com` (token emailed, valid 15 min)
-- **If rescue fails:** Troy can disable WAF via FTP
-
-### Users Getting Blocked
-- Check Security Exceptions Log for the user's IP
-- Delete their IP from Auto IP Blocking
-- Add to Safe IP List if they have a static IP
-
-### Key Rule
-When troubleshooting any weird access issue, check Admin Tools Security Exceptions Log first — it's often the cause.
-
----
-
-## Astroid Framework
-- **What it does:** Template framework — controls header, footer, layout, typography, colors
-- **Where to find it:** System → Site Templates → Styles → [Your Template Style]
-- **Troy handles** all Astroid configuration and updates
-- **Always back up before updating** — Astroid updates have a history of breaking sites
-
-### CRITICAL: Security Vulnerability (CVE-2026-21628)
-- Authentication bypass affecting all versions before 3.3.11. **Update to 3.3.12 or later.**
-- Check for backdoors: look for "System - BLPayload" in Plugin Manager
-- Updating alone does NOT remove existing backdoors — Troy handles full security audit
+- **Troy handles** all Stripe setup and configuration
+- If a client asks about payment forms, offer to set it up for them or loop Troy in
 
 ---
 
@@ -171,30 +125,3 @@ When troubleshooting any weird access issue, check Admin Tools Security Exceptio
 - **What it does:** Adds schema markup to pages for Google rich results (FAQ dropdowns, business info cards, event details)
 - **Where to find it:** Admin → Components → Google Structured Data
 - **Troy/Sabriel handle** setup — clients don't typically configure this themselves
-- **Docs:** https://www.tassos.gr/docs/google-structured-data
-
----
-
----
-
-## Extension Management Best Practices
-1. Always back up before updating extensions
-2. Check compatibility with current Joomla version before updating
-3. If an extension breaks after update: restore from backup, report to vendor
-4. Monitor security advisories for installed extensions (Joomla Vulnerable Extensions List)
-5. Disable (don't delete) unused extensions until confirmed safe to remove
-6. Troy handles complex extension issues and server-side configuration
-
-
-## TreeUtah – Private Events for Waiver Collection
-**Client:** TreeUtah (Katerina Mihailidis, Community Outreach Coordinator)
-**Contact:** Katerina@TreeUtah.org
-**Use Case:** Collecting waivers from private groups (e.g., tree planting partners) without publishing a public event
-
-### Solution: Use a Hidden or Password-Protected Event
-
-Event Booking supports private events — no need for Google Forms.
-
-- **Hidden event:** Set the event to "Hidden" so it won't appear on the public events list. Share the direct registration link manually. (Tip: temporarily unhide the event to grab the link, then hide it again.)
-- **Password-protected event:** Set a password on the event — registrants must know the password to access the registration form.
-- Registrations/submissions are stored in the admin area as normal

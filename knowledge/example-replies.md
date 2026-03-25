@@ -37,8 +37,8 @@ I changed the text for the button.
 **Client:** Works for a partner agency helping with a client's website. Can't find the FAQs page in Joomla — checked content, articles, categories, and extensions. Asks if it's hard-coded or editable.
 **Reply:** Good morning - that is just an article like most things. Its called Frequently Asked Questions, so you need to look for that.
 
-Sabriel is doing a basic Joomla training next week that you may find useful. You can sign up here:
-https://thirdsun.com/training/third-sun-training/joomla-online-training-march-11-2026
+Sabriel does regular Joomla training sessions that you may find useful. Check out the training page for upcoming dates:
+https://thirdsun.com/training
 
 ### Client reports slow/unresponsive website
 **Client:** Website has been slow and sometimes not loading over the past few weeks. Not sure if it's something Third Sun can look into or something on their end. Also introduces a new staff member.
@@ -84,10 +84,7 @@ Let us know right away if you notice unusual activity.
 **Client:** Users submitting abstracts through a website form are getting an error that their IP is listed in a spam database. Staff tried to recreate but couldn't. Asks if there's a setting on the admin side.
 **Reply:** Well, that is the anti-spam filters doing their job. It means their network IP is listed in a spam database for some reason. We can disable that, but that can open it up to spam submissions. That form is so long its not likely a bot will fill it out, but it can happen. It doesn't have anything to do with their email, but rather their network or computer.
 
-For example this was one of the submissions:
-https://check.spamhaus.org/results/?query=158.61.6.4
-
-It would be in that persons best interest to clear that block or issue in any case.
+It would be in that person's best interest to clear that block or issue in any case.
 
 If you want me to disable that check, let me know.
 
