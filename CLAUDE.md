@@ -95,3 +95,9 @@ Tests use vitest + supertest. Rate limiting is disabled in test mode (`NODE_ENV=
 - Knowledge files are plain markdown — easy for anyone to edit
 - Incident log entries follow a consistent format (date, severity, affected, issue, resolution, handler)
 - Frontend uses dark glassmorphism theme with tab-based navigation
+
+## Git
+
+- Remote: github.com/Third-Sun-Pro/support-reply (public — required for scheduled remote agents)
+- `.env` is gitignored — never commit (contains `APP_PASSWORD` and `ANTHROPIC_API_KEY`)
+- `knowledge/incidents.md` is committed — incident log grows over time via the `/incidents` endpoint and gets pulled in via auto-deploy
