@@ -1,6 +1,7 @@
 require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const Anthropic = require("@anthropic-ai/sdk");
 
 // ---------------------------------------------------------------------------
@@ -475,6 +476,80 @@ function getHelpDocs() {
   return { pages, guides };
 }
 
+// ---------------------------------------------------------------------------
+// Common Issues — pinned Q&As and free-form how-tos, stored as JSON
+// ---------------------------------------------------------------------------
+const commonIssuesPath = path.join(knowledgeDir, "common-issues.json");
+
+function readCommonIssuesFile() {
+  if (!fs.existsSync(commonIssuesPath)) return [];
+  try {
+    const raw = fs.readFileSync(commonIssuesPath, "utf-8").trim();
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeCommonIssuesFile(items) {
+  fs.writeFileSync(commonIssuesPath, JSON.stringify(items, null, 2) + "\n", "utf-8");
+}
+
+function getCommonIssues() {
+  return readCommonIssuesFile().sort((a, b) => (b.addedAt || "").localeCompare(a.addedAt || ""));
+}
+
+function addCommonIssue({ title, answer, question = null, source = "manual", addedBy = null }) {
+  const cleanTitle = (title || "").trim();
+  const cleanAnswer = (answer || "").trim();
+  if (!cleanTitle) throw new Error("Title is required.");
+  if (!cleanAnswer) throw new Error("Answer is required.");
+
+  const items = readCommonIssuesFile();
+  const item = {
+    id: crypto.randomUUID(),
+    title: cleanTitle,
+    answer: cleanAnswer,
+    question: question ? question.trim() : null,
+    source: source === "qa" ? "qa" : "manual",
+    addedBy: addedBy ? addedBy.trim() : null,
+    addedAt: new Date().toISOString(),
+  };
+  items.push(item);
+  writeCommonIssuesFile(items);
+  return item;
+}
+
+function updateCommonIssue(id, { title, answer }) {
+  const items = readCommonIssuesFile();
+  const idx = items.findIndex((it) => it.id === id);
+  if (idx === -1) throw new Error("Not found.");
+
+  if (title !== undefined) {
+    const cleanTitle = String(title).trim();
+    if (!cleanTitle) throw new Error("Title cannot be empty.");
+    items[idx].title = cleanTitle;
+  }
+  if (answer !== undefined) {
+    const cleanAnswer = String(answer).trim();
+    if (!cleanAnswer) throw new Error("Answer cannot be empty.");
+    items[idx].answer = cleanAnswer;
+  }
+  items[idx].updatedAt = new Date().toISOString();
+  writeCommonIssuesFile(items);
+  return items[idx];
+}
+
+function deleteCommonIssue(id) {
+  const items = readCommonIssuesFile();
+  const next = items.filter((it) => it.id !== id);
+  if (next.length === items.length) throw new Error("Not found.");
+  writeCommonIssuesFile(next);
+  return { id };
+}
+
 module.exports = {
   draftReplyStream,
   answerStream,
@@ -490,4 +565,8 @@ module.exports = {
   getKnowledgeIndex,
   getIncidents,
   getHelpDocs,
+  getCommonIssues,
+  addCommonIssue,
+  updateCommonIssue,
+  deleteCommonIssue,
 };

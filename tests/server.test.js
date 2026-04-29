@@ -12,6 +12,7 @@ const app = (await import("../server.js")).default;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const incidentsPath = path.join(__dirname, "..", "knowledge", "incidents.md");
+const commonIssuesPath = path.join(__dirname, "..", "knowledge", "common-issues.json");
 
 async function getAuthCookie() {
   const res = await request(app)
@@ -498,5 +499,125 @@ describe("GET /help-docs endpoint", () => {
     expect(res.body).toHaveProperty("guides");
     expect(Array.isArray(res.body.pages)).toBe(true);
     expect(Array.isArray(res.body.guides)).toBe(true);
+  });
+});
+
+describe("Common Issues endpoint", () => {
+  let snapshot = null;
+  beforeAll(() => {
+    snapshot = fs.existsSync(commonIssuesPath) ? fs.readFileSync(commonIssuesPath, "utf-8") : null;
+    fs.writeFileSync(commonIssuesPath, "[]\n", "utf-8");
+  });
+  afterAll(() => {
+    if (snapshot === null) fs.rmSync(commonIssuesPath, { force: true });
+    else fs.writeFileSync(commonIssuesPath, snapshot, "utf-8");
+  });
+
+  it("rejects GET without auth", async () => {
+    const res = await request(app).get("/common-issues");
+    expect(res.status).toBe(401);
+  });
+
+  it("returns empty list when file is empty", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app).get("/common-issues").set("Cookie", cookie);
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+
+  it("rejects POST without title", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/common-issues")
+      .set("Cookie", cookie)
+      .send({ answer: "An answer" });
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects POST without answer", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/common-issues")
+      .set("Cookie", cookie)
+      .send({ title: "A title" });
+    expect(res.status).toBe(400);
+  });
+
+  it("creates a manual common issue", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/common-issues")
+      .set("Cookie", cookie)
+      .send({ title: "Manual entry", answer: "Manual answer" });
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.item.id).toBeDefined();
+    expect(res.body.item.source).toBe("manual");
+    expect(res.body.item.question).toBeNull();
+  });
+
+  it("creates a Q&A-sourced common issue with question", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .post("/common-issues")
+      .set("Cookie", cookie)
+      .send({
+        title: "From a Q&A",
+        answer: "Pinned answer",
+        question: "What was the original question?",
+        source: "qa",
+      });
+    expect(res.status).toBe(200);
+    expect(res.body.item.source).toBe("qa");
+    expect(res.body.item.question).toBe("What was the original question?");
+  });
+
+  it("updates an existing common issue", async () => {
+    const cookie = await getAuthCookie();
+    const create = await request(app)
+      .post("/common-issues")
+      .set("Cookie", cookie)
+      .send({ title: "Before", answer: "Original" });
+    const id = create.body.item.id;
+    const update = await request(app)
+      .put(`/common-issues/${id}`)
+      .set("Cookie", cookie)
+      .send({ title: "After" });
+    expect(update.status).toBe(200);
+    expect(update.body.item.title).toBe("After");
+    expect(update.body.item.answer).toBe("Original");
+    expect(update.body.item.updatedAt).toBeDefined();
+  });
+
+  it("returns 404 when updating a missing item", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .put("/common-issues/does-not-exist")
+      .set("Cookie", cookie)
+      .send({ title: "x" });
+    expect(res.status).toBe(404);
+  });
+
+  it("deletes a common issue", async () => {
+    const cookie = await getAuthCookie();
+    const create = await request(app)
+      .post("/common-issues")
+      .set("Cookie", cookie)
+      .send({ title: "Doomed", answer: "Bye" });
+    const id = create.body.item.id;
+    const del = await request(app)
+      .delete(`/common-issues/${id}`)
+      .set("Cookie", cookie);
+    expect(del.status).toBe(200);
+    const after = await request(app).get("/common-issues").set("Cookie", cookie);
+    expect(after.body.find(it => it.id === id)).toBeUndefined();
+  });
+
+  it("returns 404 when deleting a missing item", async () => {
+    const cookie = await getAuthCookie();
+    const res = await request(app)
+      .delete("/common-issues/does-not-exist")
+      .set("Cookie", cookie);
+    expect(res.status).toBe(404);
   });
 });

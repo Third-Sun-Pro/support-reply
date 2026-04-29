@@ -1,12 +1,13 @@
 # Support Hub — Third Sun Internal Operations Tool
 
 ## What This Is
-Combined support tool for Third Sun Productions with five tabs:
+Combined support tool for Third Sun Productions with six tabs:
 1. **Draft Reply** — AI-powered client support email drafting with auto-detection, client directory lookup, and triage routing
 2. **Ask a Question** — Multi-turn Q&A against the knowledge base with conversation history (hosting, domains, Joomla, troubleshooting, tools, business admin)
-3. **Log Incident** — Record security incidents, outages, and issues (appended to knowledge base), with recent incident viewer
-4. **Knowledge Base** — Browse/search the full knowledge base, and add new sections via AI-powered formatting
-5. **Quick Reference** — Searchable client directory (153 clients) and help docs/Scribe guide link library with copy-to-clipboard
+3. **Common Issues** — Team-shared list of pinned how-tos. Pin a Q&A answer with one click, or add free-form entries via the "+ Add" button
+4. **Log Incident** — Record security incidents, outages, and issues (appended to knowledge base), with recent incident viewer
+5. **Knowledge Base** — Browse/search the full knowledge base, and add new sections via AI-powered formatting
+6. **Quick Reference** — Searchable client directory (153 clients) and help docs/Scribe guide link library with copy-to-clipboard
 
 ## Stack
 Node.js, Express 5, Anthropic SDK (`claude-sonnet-4-6`), vanilla HTML/CSS/JS frontend. HMAC-SHA256 cookie auth. SSE streaming. Markdown knowledge files with Anthropic prompt caching.
@@ -33,9 +34,10 @@ support-reply/
 │   ├── hosting.md         # Hosting providers (CloudAccess, Cloudways, Stablehost, Veerotech, XMission)
 │   ├── incidents.md       # Incident log — grows over time via /incidents endpoint
 │   ├── joomla-components.md  # All Joomla extensions with detailed docs, Stripe/payment forms
-│   └── tools-accounts.md  # Dashlane, ReCaptcha, SendGrid, Adobe, team tools
+│   ├── tools-accounts.md  # Dashlane, ReCaptcha, SendGrid, Adobe, team tools
+│   └── common-issues.json # Pinned how-tos (CRUD via /common-issues — JSON, not loaded into prompt)
 └── tests/
-    └── server.test.js     # 48 tests — auth, routes, Q&A, incidents, knowledge, browse, format, history, generate helpers, help docs
+    └── server.test.js     # 58 tests — auth, routes, Q&A, incidents, knowledge, browse, format, history, common issues, generate helpers, help docs
 ```
 
 ## Running Locally
@@ -56,6 +58,10 @@ npm test                 # Run tests
 - `GET /help-docs` — Help doc pages + Scribe guides as structured JSON (requires auth)
 - `GET /incidents` — List all incidents (requires auth)
 - `POST /incidents` — Log an incident (requires auth). Body: `{ title, severity?, affected?, description, resolution?, handler? }`
+- `GET /common-issues` — List pinned common issues (requires auth)
+- `POST /common-issues` — Pin/add a common issue (requires auth). Body: `{ title, answer, question?, source?, addedBy? }` (`source: "qa" | "manual"`)
+- `PUT /common-issues/:id` — Update title/answer (requires auth). Body: `{ title?, answer? }`
+- `DELETE /common-issues/:id` — Unpin (requires auth)
 - `POST /knowledge/format` — AI-format raw content for a knowledge file (requires auth, rate limited). Body: `{ category, content }`
 - `POST /knowledge` — Save a formatted knowledge section (requires auth). Body: `{ category, content }`
 - `POST /logout` — Clear auth cookie

@@ -827,13 +827,40 @@
       border: 1px solid var(--glass-border);
       border-radius: 10px;
       margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .incident-card:hover {
+      border-color: var(--accent-border, rgba(255,255,255,0.15));
+      background: var(--input-hover-bg, var(--input-bg));
     }
 
     .incident-card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 0.5rem;
       margin-bottom: 0.25rem;
+    }
+
+    .incident-card-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-width: 0;
+    }
+
+    .incident-card-chevron {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      transition: transform 0.18s ease;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .incident-card.expanded .incident-card-chevron {
+      transform: rotate(90deg);
     }
 
     .incident-card-title {
@@ -867,6 +894,264 @@
       color: var(--text-dim);
       line-height: 1.5;
       margin-top: 0.2rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+    }
+
+    .incident-card.expanded .incident-card-detail {
+      -webkit-line-clamp: unset;
+      display: block;
+      overflow: visible;
+      white-space: pre-wrap;
+    }
+
+    .incident-card-resolution {
+      display: none;
+      margin-top: 0.6rem;
+      padding-top: 0.55rem;
+      border-top: 1px dashed var(--glass-border);
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .incident-card.expanded .incident-card-resolution {
+      display: block;
+    }
+
+    .incident-card-resolution-label {
+      display: block;
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .incident-card-resolution.pending {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* ── Common Issues ── */
+    .common-toolbar {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .common-toolbar input[type="text"] {
+      flex: 1;
+    }
+    .common-add-btn {
+      flex-shrink: 0;
+      padding: 0.7rem 1.1rem;
+      font-size: 0.78rem;
+      width: auto;
+    }
+
+    .common-empty {
+      padding: 2rem 1rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .common-empty-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin-bottom: 0.4rem;
+    }
+    .common-empty-hint {
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
+    .common-card {
+      padding: 0.75rem 0.95rem;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      margin-bottom: 0.55rem;
+      cursor: pointer;
+      transition: border-color 0.15s ease;
+    }
+    .common-card:hover { border-color: var(--glass-border-focus); }
+
+    .common-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .common-card-chevron {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      transition: transform 0.18s ease;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .common-card.expanded .common-card-chevron { transform: rotate(90deg); }
+
+    .common-card-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      min-width: 0;
+    }
+    .common-card-source {
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 0.15rem 0.45rem;
+      border: 1px solid var(--glass-border);
+      border-radius: 100px;
+      flex-shrink: 0;
+    }
+
+    .common-card-body {
+      display: none;
+      margin-top: 0.7rem;
+      padding-top: 0.7rem;
+      border-top: 1px dashed var(--glass-border);
+    }
+    .common-card.expanded .common-card-body { display: block; }
+
+    .common-card-question {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-bottom: 0.55rem;
+      padding-left: 0.5rem;
+      border-left: 2px solid var(--glass-border);
+    }
+
+    .common-card-answer {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+    .common-card-answer p { margin-bottom: 0.5rem; }
+    .common-card-answer p:last-child { margin-bottom: 0; }
+    .common-card-answer code {
+      background: rgba(0,0,0,0.3);
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+    }
+
+    .common-card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.7rem;
+      padding-top: 0.55rem;
+      border-top: 1px dashed var(--glass-border);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+    .common-card-actions {
+      display: flex;
+      gap: 0.4rem;
+    }
+    .common-card-actions button {
+      background: none;
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.68rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .common-card-actions button:hover { color: var(--text); border-color: var(--glass-border-focus); }
+    .common-card-actions .common-unpin-btn:hover { color: var(--danger); border-color: rgba(212,123,123,0.4); }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--navy-mid);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      max-width: 560px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .modal-header h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-readonly {
+      padding: 0.6rem 0.85rem;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      margin-top: 1rem;
+    }
+    .modal-actions .btn {
+      width: auto;
+      padding: 0.6rem 1.1rem;
+      font-size: 0.78rem;
+    }
+
+    /* ── Pin button (in Q&A turn actions) ── */
+    .qa-pin-btn.pinned {
+      color: var(--copper);
+      border-color: var(--copper);
     }
 
     /* ── Q&A conversation thread ── */
@@ -1101,6 +1386,7 @@
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="draft">Draft Reply</button>
       <button class="tab-btn" data-tab="qa">Ask a Question</button>
+      <button class="tab-btn" data-tab="common">Common Issues</button>
       <button class="tab-btn" data-tab="incident">Log Incident</button>
       <button class="tab-btn" data-tab="knowledge">Knowledge Base</button>
       <button class="tab-btn" data-tab="reference">Quick Reference</button>
@@ -1212,6 +1498,46 @@
           <button class="btn btn-ghost" id="clearQaHistoryBtn" style="padding: 0.3rem 0.7rem; font-size: 0.7rem;">Clear</button>
         </div>
         <div id="qaHistoryList"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Common Issues Tab ═══ -->
+    <div class="tab-view" id="commonView">
+      <div class="common-toolbar">
+        <input type="text" id="commonSearch" placeholder="Search common issues...">
+        <button type="button" class="btn btn-primary common-add-btn" id="commonAddBtn">+ Add</button>
+      </div>
+      <div id="commonEmpty" class="common-empty" style="display:none;">
+        <p class="common-empty-title">No common issues yet</p>
+        <p class="common-empty-hint">Pin a Q&amp;A answer from the Ask a Question tab, or click <strong>+ Add</strong> to save a how-to manually.</p>
+      </div>
+      <div id="commonList"></div>
+    </div>
+
+    <!-- Common Issues — Add/Edit modal -->
+    <div class="modal-overlay" id="commonModalOverlay">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="commonModalHeading">
+        <div class="modal-header">
+          <h3 id="commonModalHeading">Add Common Issue</h3>
+          <button type="button" class="modal-close" id="commonModalClose" aria-label="Close">×</button>
+        </div>
+        <div class="field-group">
+          <label for="commonModalTitleInput">Title</label>
+          <input type="text" id="commonModalTitleInput" placeholder="e.g. How to extend the session time limit">
+        </div>
+        <div class="field-group" id="commonModalQuestionGroup" style="display:none;">
+          <label>Original question</label>
+          <div id="commonModalQuestionPreview" class="modal-readonly"></div>
+        </div>
+        <div class="field-group">
+          <label for="commonModalAnswerInput">Answer</label>
+          <textarea id="commonModalAnswerInput" placeholder="Markdown supported" style="min-height: 180px; font-family: inherit;"></textarea>
+        </div>
+        <div class="error-msg" id="commonModalError"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="commonModalCancel">Cancel</button>
+          <button type="button" class="btn btn-primary" id="commonModalSave">Save</button>
+        </div>
       </div>
     </div>
 
@@ -1468,6 +1794,7 @@
       if (btn.dataset.tab === "knowledge" && !knowledgeIndex) loadKnowledgeIndex();
       if (btn.dataset.tab === "incident") loadIncidents();
       if (btn.dataset.tab === "reference") initReferenceTab();
+      if (btn.dataset.tab === "common") loadCommonIssues();
     });
   });
 
@@ -1621,7 +1948,10 @@
       html += `<div class="qa-turn">`;
       html += `<div class="qa-turn-question">${escapeHtml(turn.question)}</div>`;
       html += `<div class="qa-turn-answer">${renderMarkdown(turn.answer)}</div>`;
-      html += `<div class="qa-turn-actions"><button class="btn btn-ghost qa-copy-answer-btn">Copy</button></div>`;
+      html += `<div class="qa-turn-actions">`;
+      html += `<button class="btn btn-ghost qa-copy-answer-btn">Copy</button>`;
+      html += `<button class="btn btn-ghost qa-pin-btn" title="Save to Common Issues">Pin to Common Issues</button>`;
+      html += `</div>`;
       html += `</div>`;
     }
 
@@ -2312,17 +2642,275 @@
       incidentList.style.display = "block";
       incidentListContent.innerHTML = incidents.map(inc => {
         const severityClass = (inc.severity || "").toLowerCase();
-        return `<div class="incident-card">
+        const resolutionText = (inc.resolution || "").trim();
+        const isPending = !resolutionText || resolutionText.toLowerCase() === "pending";
+        const resolutionHtml = isPending
+          ? `<div class="incident-card-resolution pending"><span class="incident-card-resolution-label">Resolution</span>Still pending</div>`
+          : `<div class="incident-card-resolution"><span class="incident-card-resolution-label">Resolution</span>${escapeHtml(resolutionText)}</div>`;
+        return `<div class="incident-card" role="button" tabindex="0" aria-expanded="false">
           <div class="incident-card-header">
-            <span class="incident-card-title">${escapeHtml(inc.title)}</span>
+            <div class="incident-card-title-wrap">
+              <span class="incident-card-chevron" aria-hidden="true">▶</span>
+              <span class="incident-card-title">${escapeHtml(inc.title)}</span>
+            </div>
             <span class="severity-badge ${severityClass}">${escapeHtml(inc.severity)}</span>
           </div>
           <div class="incident-card-date">${escapeHtml(inc.date)} &middot; ${escapeHtml(inc.affected)} &middot; ${escapeHtml(inc.handler)}</div>
           <div class="incident-card-detail">${escapeHtml(inc.description)}</div>
+          ${resolutionHtml}
         </div>`;
       }).join("");
     } catch { /* silent fail */ }
   }
+
+  incidentListContent.addEventListener("click", (e) => {
+    const card = e.target.closest(".incident-card");
+    if (!card) return;
+    const expanded = card.classList.toggle("expanded");
+    card.setAttribute("aria-expanded", expanded ? "true" : "false");
+  });
+
+  incidentListContent.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const card = e.target.closest(".incident-card");
+    if (!card) return;
+    e.preventDefault();
+    const expanded = card.classList.toggle("expanded");
+    card.setAttribute("aria-expanded", expanded ? "true" : "false");
+  });
+
+  // ══════════════════════════════════════════════════════
+  // Common Issues — pinned answers + manual how-tos
+  // ══════════════════════════════════════════════════════
+  const commonSearch = document.getElementById("commonSearch");
+  const commonAddBtn = document.getElementById("commonAddBtn");
+  const commonList = document.getElementById("commonList");
+  const commonEmpty = document.getElementById("commonEmpty");
+  const commonModalOverlay = document.getElementById("commonModalOverlay");
+  const commonModalHeading = document.getElementById("commonModalHeading");
+  const commonModalTitleInput = document.getElementById("commonModalTitleInput");
+  const commonModalAnswerInput = document.getElementById("commonModalAnswerInput");
+  const commonModalQuestionGroup = document.getElementById("commonModalQuestionGroup");
+  const commonModalQuestionPreview = document.getElementById("commonModalQuestionPreview");
+  const commonModalError = document.getElementById("commonModalError");
+  const commonModalSave = document.getElementById("commonModalSave");
+  const commonModalCancel = document.getElementById("commonModalCancel");
+  const commonModalClose = document.getElementById("commonModalClose");
+
+  let commonIssuesData = [];
+  let commonIssuesLoaded = false;
+  let commonModalState = null; // { mode: "add" | "edit", id?, question? }
+
+  async function loadCommonIssues() {
+    try {
+      const res = await fetch("/common-issues");
+      if (!res.ok) throw new Error("Failed");
+      commonIssuesData = await res.json();
+      commonIssuesLoaded = true;
+      renderCommonIssues();
+    } catch {
+      commonList.innerHTML = `<div class="kb-no-results">Failed to load common issues.</div>`;
+    }
+  }
+
+  function renderCommonIssues() {
+    const query = (commonSearch.value || "").trim().toLowerCase();
+    const filtered = query
+      ? commonIssuesData.filter(it =>
+          it.title.toLowerCase().includes(query) ||
+          it.answer.toLowerCase().includes(query) ||
+          (it.question || "").toLowerCase().includes(query))
+      : commonIssuesData;
+
+    if (commonIssuesData.length === 0) {
+      commonEmpty.style.display = "block";
+      commonList.innerHTML = "";
+      return;
+    }
+    commonEmpty.style.display = "none";
+
+    if (filtered.length === 0) {
+      commonList.innerHTML = `<div class="kb-no-results">No common issues match "${escapeHtml(query)}"</div>`;
+      return;
+    }
+
+    commonList.innerHTML = filtered.map(it => {
+      const sourceLabel = it.source === "qa" ? "From Q&amp;A" : "Manual";
+      const questionHtml = it.question
+        ? `<div class="common-card-question">${escapeHtml(it.question)}</div>`
+        : "";
+      const dateStr = it.addedAt ? new Date(it.addedAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "";
+      return `<div class="common-card" data-id="${escapeHtml(it.id)}" role="button" tabindex="0" aria-expanded="false">
+        <div class="common-card-header">
+          <span class="common-card-chevron" aria-hidden="true">▶</span>
+          <span class="common-card-title">${escapeHtml(it.title)}</span>
+          <span class="common-card-source">${sourceLabel}</span>
+        </div>
+        <div class="common-card-body">
+          ${questionHtml}
+          <div class="common-card-answer">${renderMarkdown(it.answer)}</div>
+          <div class="common-card-meta">
+            <span>Added ${escapeHtml(dateStr)}</span>
+            <span class="common-card-actions">
+              <button type="button" class="common-edit-btn" data-id="${escapeHtml(it.id)}">Edit</button>
+              <button type="button" class="common-unpin-btn" data-id="${escapeHtml(it.id)}">Unpin</button>
+            </span>
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  commonSearch.addEventListener("input", () => {
+    if (commonIssuesLoaded) renderCommonIssues();
+  });
+
+  commonList.addEventListener("click", async (e) => {
+    const editBtn = e.target.closest(".common-edit-btn");
+    if (editBtn) {
+      e.stopPropagation();
+      const item = commonIssuesData.find(it => it.id === editBtn.dataset.id);
+      if (item) openCommonModal({ mode: "edit", item });
+      return;
+    }
+    const unpinBtn = e.target.closest(".common-unpin-btn");
+    if (unpinBtn) {
+      e.stopPropagation();
+      if (!confirm("Unpin this common issue? It will be removed for everyone.")) return;
+      try {
+        const res = await fetch(`/common-issues/${encodeURIComponent(unpinBtn.dataset.id)}`, { method: "DELETE" });
+        if (!res.ok) throw new Error("Failed");
+        commonIssuesData = commonIssuesData.filter(it => it.id !== unpinBtn.dataset.id);
+        renderCommonIssues();
+      } catch {
+        alert("Could not unpin. Try again.");
+      }
+      return;
+    }
+    const card = e.target.closest(".common-card");
+    if (!card) return;
+    const expanded = card.classList.toggle("expanded");
+    card.setAttribute("aria-expanded", expanded ? "true" : "false");
+  });
+
+  commonList.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    if (e.target.closest("button")) return;
+    const card = e.target.closest(".common-card");
+    if (!card) return;
+    e.preventDefault();
+    const expanded = card.classList.toggle("expanded");
+    card.setAttribute("aria-expanded", expanded ? "true" : "false");
+  });
+
+  function openCommonModal(state) {
+    commonModalState = state;
+    commonModalError.style.display = "none";
+    if (state.mode === "edit") {
+      commonModalHeading.textContent = "Edit Common Issue";
+      commonModalTitleInput.value = state.item.title;
+      commonModalAnswerInput.value = state.item.answer;
+      if (state.item.question) {
+        commonModalQuestionGroup.style.display = "block";
+        commonModalQuestionPreview.textContent = state.item.question;
+      } else {
+        commonModalQuestionGroup.style.display = "none";
+      }
+    } else if (state.mode === "pin") {
+      commonModalHeading.textContent = "Pin to Common Issues";
+      commonModalTitleInput.value = state.suggestedTitle || "";
+      commonModalAnswerInput.value = state.answer || "";
+      commonModalQuestionGroup.style.display = "block";
+      commonModalQuestionPreview.textContent = state.question || "";
+    } else {
+      commonModalHeading.textContent = "Add Common Issue";
+      commonModalTitleInput.value = "";
+      commonModalAnswerInput.value = "";
+      commonModalQuestionGroup.style.display = "none";
+    }
+    commonModalOverlay.classList.add("open");
+    setTimeout(() => commonModalTitleInput.focus(), 50);
+  }
+
+  function closeCommonModal() {
+    commonModalOverlay.classList.remove("open");
+    commonModalState = null;
+  }
+
+  commonAddBtn.addEventListener("click", () => openCommonModal({ mode: "add" }));
+  commonModalCancel.addEventListener("click", closeCommonModal);
+  commonModalClose.addEventListener("click", closeCommonModal);
+  commonModalOverlay.addEventListener("click", (e) => {
+    if (e.target === commonModalOverlay) closeCommonModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && commonModalOverlay.classList.contains("open")) closeCommonModal();
+  });
+
+  commonModalSave.addEventListener("click", async () => {
+    const title = commonModalTitleInput.value.trim();
+    const answer = commonModalAnswerInput.value.trim();
+    if (!title || !answer) {
+      commonModalError.textContent = "Title and answer are both required.";
+      commonModalError.style.display = "block";
+      return;
+    }
+    commonModalError.style.display = "none";
+    commonModalSave.disabled = true;
+
+    try {
+      if (commonModalState.mode === "edit") {
+        const res = await fetch(`/common-issues/${encodeURIComponent(commonModalState.item.id)}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, answer }),
+        });
+        if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Failed"); }
+        const data = await res.json();
+        const idx = commonIssuesData.findIndex(it => it.id === data.item.id);
+        if (idx >= 0) commonIssuesData[idx] = data.item;
+      } else {
+        const body = { title, answer };
+        if (commonModalState.mode === "pin") {
+          body.question = commonModalState.question;
+          body.source = "qa";
+        }
+        const res = await fetch("/common-issues", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Failed"); }
+        const data = await res.json();
+        commonIssuesData.unshift(data.item);
+      }
+      commonIssuesLoaded = true;
+      renderCommonIssues();
+      closeCommonModal();
+    } catch (err) {
+      commonModalError.textContent = err.message;
+      commonModalError.style.display = "block";
+    } finally {
+      commonModalSave.disabled = false;
+    }
+  });
+
+  // Q&A Pin button — opens modal with the answer pre-filled
+  qaThreadContent.addEventListener("click", (e) => {
+    const btn = e.target.closest(".qa-pin-btn");
+    if (!btn) return;
+    const turnEl = btn.closest(".qa-turn");
+    const turns = qaThreadContent.querySelectorAll(".qa-turn");
+    const idx = Array.from(turns).indexOf(turnEl);
+    if (idx < 0 || !qaConversationDisplay[idx]) return;
+    const turn = qaConversationDisplay[idx];
+    openCommonModal({
+      mode: "pin",
+      suggestedTitle: turn.question.length > 80 ? turn.question.slice(0, 80) + "..." : turn.question,
+      question: turn.question,
+      answer: turn.answer,
+    });
+  });
 
   // ══════════════════════════════════════════════════════
   // Knowledge Base — Browse

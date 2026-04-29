@@ -5,7 +5,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const fs = require("fs");
-const { draftReplyStream, answerStream, logIncident, addKnowledge, formatKnowledge, getKnowledgeIndex, getIncidents, getHelpDocs } = require("./generate");
+const { draftReplyStream, answerStream, logIncident, addKnowledge, formatKnowledge, getKnowledgeIndex, getIncidents, getHelpDocs, getCommonIssues, addCommonIssue, updateCommonIssue, deleteCommonIssue } = require("./generate");
 
 // ---------------------------------------------------------------------------
 // Structured logger
@@ -415,6 +415,61 @@ app.post("/knowledge", requireAuth, (req, res) => {
       return res.status(400).json({ error: err.message });
     }
     res.status(500).json({ error: "Failed to add knowledge." });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Common Issues — pinned answers + manual entries
+// ---------------------------------------------------------------------------
+app.get("/common-issues", requireAuth, (_req, res) => {
+  try {
+    res.json(getCommonIssues());
+  } catch (err) {
+    log("error", "Get common issues failed", { error: err.message });
+    res.status(500).json({ error: "Failed to load common issues." });
+  }
+});
+
+app.post("/common-issues", requireAuth, (req, res) => {
+  const { title, answer, question, source, addedBy } = req.body;
+  if (!title || !title.trim() || !answer || !answer.trim()) {
+    return res.status(400).json({ error: "Title and answer are required." });
+  }
+  try {
+    const item = addCommonIssue({ title, answer, question, source, addedBy });
+    log("info", "Common issue added", { reqId: req.id, id: item.id, source: item.source });
+    res.json({ success: true, item });
+  } catch (err) {
+    log("error", "Add common issue failed", { reqId: req.id, error: err.message });
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.put("/common-issues/:id", requireAuth, (req, res) => {
+  const { title, answer } = req.body;
+  if (title === undefined && answer === undefined) {
+    return res.status(400).json({ error: "Nothing to update." });
+  }
+  try {
+    const item = updateCommonIssue(req.params.id, { title, answer });
+    log("info", "Common issue updated", { reqId: req.id, id: item.id });
+    res.json({ success: true, item });
+  } catch (err) {
+    log("error", "Update common issue failed", { reqId: req.id, error: err.message });
+    const status = err.message === "Not found." ? 404 : 400;
+    res.status(status).json({ error: err.message });
+  }
+});
+
+app.delete("/common-issues/:id", requireAuth, (req, res) => {
+  try {
+    const result = deleteCommonIssue(req.params.id);
+    log("info", "Common issue deleted", { reqId: req.id, id: result.id });
+    res.json({ success: true });
+  } catch (err) {
+    log("error", "Delete common issue failed", { reqId: req.id, error: err.message });
+    const status = err.message === "Not found." ? 404 : 400;
+    res.status(status).json({ error: err.message });
   }
 });
 
