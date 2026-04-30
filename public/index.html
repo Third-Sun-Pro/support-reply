@@ -221,6 +221,14 @@
     .tab-view { display: none; }
     .tab-view.active { display: block; }
 
+    .form-wrapper {
+      background: linear-gradient(135deg, rgba(60, 60, 70, 0.3), rgba(70, 65, 80, 0.2));
+      border: 1px solid rgba(220, 180, 140, 0.2);
+      border-radius: 12px;
+      padding: 1.25rem;
+      backdrop-filter: blur(10px);
+    }
+
     /* ── Form elements ── */
     label {
       display: block;
@@ -1543,7 +1551,8 @@
 
     <!-- ═══ Incident Tab ═══ -->
     <div class="tab-view" id="incidentView">
-      <form id="incidentForm">
+      <div class="form-wrapper">
+        <form id="incidentForm">
         <div class="field-group">
           <label for="incidentTitle">Title</label>
           <input type="text" id="incidentTitle" placeholder="e.g. Astroid Template Vulnerability" required>
@@ -1585,10 +1594,11 @@
           </select>
         </div>
 
-        <button type="submit" class="btn btn-primary" id="incidentBtn">Log Incident <span class="kb-shortcut"></span></button>
+        <button type="submit" class="btn btn-primary" id="incidentBtn">Log Incident</button>
         <div class="error-msg" id="incidentError"></div>
         <div class="success-msg" id="incidentSuccess"></div>
       </form>
+      </div>
 
       <!-- Recent incidents list -->
       <div id="incidentList" style="display:none;">
